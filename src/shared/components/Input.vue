@@ -24,11 +24,9 @@ const errorId = computed(() => `${inputId.value}-error`)
 
 <template>
   <div class="flex flex-col gap-1">
-    <label
-      v-if="label"
-      :for="inputId"
-      class="text-sm font-medium text-slate-700 dark:text-slate-300"
-    >{{ label }}</label>
+    <label v-if="label" :for="inputId" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+      {{ label }}
+    </label>
     <input
       :id="inputId"
       :type="type"

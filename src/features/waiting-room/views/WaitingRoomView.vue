@@ -36,8 +36,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <WaitingRoomCard
-    :meeting-title="meetingTitle"
-    :display-name="displayName"
-  />
+  <WaitingRoomCard :meeting-title="meetingTitle" :display-name="displayName" />
 </template>

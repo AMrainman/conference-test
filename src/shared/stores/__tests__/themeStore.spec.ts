@@ -9,7 +9,10 @@ function mockMatchMedia(matches: boolean) {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
   }
-  vi.stubGlobal('matchMedia', vi.fn(() => mql))
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => mql)
+  )
   return mql
 }
 

@@ -49,21 +49,11 @@ const labelClass = ['hidden', '@md:inline']
       <component :is="videoOn ? VideoCameraIcon : VideoCameraSlashIcon" class="h-5 w-5" />
     </IconButton>
 
-    <IconButton
-      label="离开会议"
-      danger
-      :label-class="labelClass"
-      @click="emit('leave')"
-    >
+    <IconButton label="离开会议" danger :label-class="labelClass" @click="emit('leave')">
       <PhoneXMarkIcon class="h-5 w-5" />
     </IconButton>
 
-    <IconButton
-      label="参会者"
-      :label-class="labelClass"
-      class="hidden @sm:flex"
-      @click="emit('toggleSidebar')"
-    >
+    <IconButton label="参会者" :label-class="labelClass" class="hidden @sm:flex" @click="emit('toggleSidebar')">
       <UsersIcon class="h-5 w-5" />
     </IconButton>
 

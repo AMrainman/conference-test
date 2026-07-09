@@ -22,7 +22,11 @@ const options: { value: Theme; label: string; icon: Component }[] = [
       :aria-label="opt.label"
       :aria-pressed="theme === opt.value"
       class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"
-      :class="theme === opt.value ? 'bg-white text-primary-600 shadow dark:bg-slate-700' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'"
+      :class="
+        theme === opt.value
+          ? 'bg-white text-primary-600 shadow dark:bg-slate-700'
+          : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'
+      "
       @click="setTheme(opt.value)"
     >
       <component :is="opt.icon" class="h-4 w-4" />

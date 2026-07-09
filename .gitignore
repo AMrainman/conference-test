@@ -1,9 +1,11 @@
+.claude/*
+!.claude/skills/
+!.claude/rules/
 dist/
 node_modules/
 .DS_Store
 .vite/
 .vscode/
 .superpowers/
-.claude/
 *storybook.log
 storybook-static

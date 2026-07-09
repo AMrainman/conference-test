@@ -21,7 +21,9 @@ const emit = defineEmits<{
         class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800"
         aria-describedby="modal-content"
       >
-        <DialogTitle v-if="title" class="mb-4 text-lg font-semibold text-slate-900 dark:text-white">{{ title }}</DialogTitle>
+        <DialogTitle v-if="title" class="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
+          {{ title }}
+        </DialogTitle>
         <DialogTitle v-else class="sr-only">弹窗</DialogTitle>
         <div id="modal-content" class="text-slate-700 dark:text-slate-200">
           <slot />

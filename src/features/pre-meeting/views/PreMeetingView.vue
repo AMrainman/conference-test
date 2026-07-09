@@ -24,18 +24,14 @@ async function enter() {
     <div
       class="@container w-full max-w-4xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
     >
-      <h1 class="mb-6 text-center text-xl font-bold text-slate-900 dark:text-slate-100">
-        会前设置
-      </h1>
+      <h1 class="mb-6 text-center text-xl font-bold text-slate-900 dark:text-slate-100">会前设置</h1>
 
       <div class="grid grid-cols-1 gap-6 @lg:grid-cols-2">
         <DevicePreview :display-name="displayName" />
 
         <div class="flex flex-col justify-center gap-4">
           <DeviceSelector />
-          <Button size="lg" class="w-full" @click="enter">
-            进入会议
-          </Button>
+          <Button size="lg" class="w-full" @click="enter">进入会议</Button>
         </div>
       </div>
     </div>

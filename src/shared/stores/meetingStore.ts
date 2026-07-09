@@ -9,14 +9,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function hasStringFields<T extends Record<string, string>>(
   value: unknown,
-  fields: T,
+  fields: T
 ): value is Record<keyof T, string> {
   if (!isRecord(value)) {
     return false
   }
-  return Object.entries(fields).every(
-    ([key, type]) => typeof value[key] === type,
-  )
+  return Object.entries(fields).every(([key, type]) => typeof value[key] === type)
 }
 
 function isMeeting(value: unknown): value is Meeting {
@@ -27,14 +25,11 @@ function isMeeting(value: unknown): value is Meeting {
       hostId: 'string',
       startTime: 'string',
       status: 'string',
-    }) &&
-    ['scheduled', 'live', 'ended'].includes(value.status)
+    }) && ['scheduled', 'live', 'ended'].includes(value.status)
   )
 }
 
-function isJoinData(
-  value: unknown,
-): value is { meetingId: string; participantId: string; displayName: string } {
+function isJoinData(value: unknown): value is { meetingId: string; participantId: string; displayName: string } {
   return hasStringFields(value, {
     meetingId: 'string',
     participantId: 'string',
@@ -81,9 +76,7 @@ export const useMeetingStore = defineStore('meeting', () => {
 
   const isHost = computed(
     () =>
-      localUser.value !== null &&
-      currentMeeting.value !== null &&
-      localUser.value.id === currentMeeting.value.hostId,
+      localUser.value !== null && currentMeeting.value !== null && localUser.value.id === currentMeeting.value.hostId
   )
 
   async function join(meetingId: string, displayName: string) {

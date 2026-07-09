@@ -14,8 +14,5 @@ async function backHome() {
 </script>
 
 <template>
-  <MeetingSummary
-    :meeting-id="meetingId"
-    @back="backHome"
-  />
+  <MeetingSummary :meeting-id="meetingId" @back="backHome" />
 </template>

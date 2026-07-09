@@ -19,11 +19,7 @@ defineProps<Props>()
         :key="participant.id"
         class="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
       >
-        <Avatar
-          :name="participant.displayName"
-          :src="participant.avatarUrl"
-          size="sm"
-        />
+        <Avatar :name="participant.displayName" :src="participant.avatarUrl" size="sm" />
 
         <div class="flex min-w-0 flex-1 flex-col">
           <div class="flex items-center gap-2">

@@ -15,11 +15,7 @@ function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 function isValidJoinPayload(body: unknown): body is JoinMeetingPayload {
-  return (
-    isObject(body) &&
-    typeof body.displayName === 'string' &&
-    body.displayName.trim().length > 0
-  )
+  return isObject(body) && typeof body.displayName === 'string' && body.displayName.trim().length > 0
 }
 
 export const handlers = [
@@ -28,13 +24,13 @@ export const handlers = [
   }),
 
   http.get('/api/meetings/:id', ({ params }) => {
-    const meeting = mockMeetings.find((m) => m.id === params.id)
+    const meeting = mockMeetings.find(m => m.id === params.id)
     if (!meeting) return HttpResponse.json({ error: 'Meeting not found' }, { status: 404 })
     return HttpResponse.json({ data: meeting })
   }),
 
   http.post('/api/meetings/:id/join', async ({ params, request }) => {
-    const meeting = mockMeetings.find((m) => m.id === params.id)
+    const meeting = mockMeetings.find(m => m.id === params.id)
     if (!meeting) {
       return HttpResponse.json({ error: 'Meeting not found' }, { status: 404 })
     }
@@ -47,10 +43,7 @@ export const handlers = [
     }
 
     if (!isValidJoinPayload(body)) {
-      return HttpResponse.json(
-        { error: 'displayName is required and must be a string' },
-        { status: 400 },
-      )
+      return HttpResponse.json({ error: 'displayName is required and must be a string' }, { status: 400 })
     }
 
     return HttpResponse.json({
@@ -63,7 +56,7 @@ export const handlers = [
   }),
 
   http.post('/api/meetings/:id/messages', async ({ params, request }) => {
-    const meeting = mockMeetings.find((m) => m.id === params.id)
+    const meeting = mockMeetings.find(m => m.id === params.id)
     if (!meeting) {
       return HttpResponse.json({ error: 'Meeting not found' }, { status: 404 })
     }
@@ -76,17 +69,11 @@ export const handlers = [
     }
 
     if (!isObject(body) || typeof body.content !== 'string') {
-      return HttpResponse.json(
-        { error: 'content is required and must be a string' },
-        { status: 400 },
-      )
+      return HttpResponse.json({ error: 'content is required and must be a string' }, { status: 400 })
     }
 
     if (!body.content.trim()) {
-      return HttpResponse.json(
-        { error: 'content is required and must be a string' },
-        { status: 400 },
-      )
+      return HttpResponse.json({ error: 'content is required and must be a string' }, { status: 400 })
     }
 
     return HttpResponse.json({

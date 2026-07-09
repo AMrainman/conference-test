@@ -11,7 +11,9 @@ defineProps<Props>()
   <header class="flex items-center justify-between bg-white px-4 py-2 shadow-sm dark:bg-slate-900">
     <div class="@container flex flex-1 min-w-0 items-center gap-3">
       <h1 class="truncate text-sm font-semibold @md:text-base">{{ title }}</h1>
-      <span class="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800">{{ meetingId }}</span>
+      <span class="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800">
+        {{ meetingId }}
+      </span>
     </div>
     <div class="flex items-center gap-2">
       <slot />

@@ -10,12 +10,8 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div
-    class="@container h-full w-full overflow-y-auto p-4"
-  >
-    <div
-      class="grid grid-cols-1 gap-4 @xs:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 @2xl:grid-cols-5"
-    >
+  <div class="@container h-full w-full overflow-y-auto p-4">
+    <div class="grid grid-cols-1 gap-4 @xs:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 @2xl:grid-cols-5">
       <VideoTile
         v-for="participant in participants"
         :key="participant.id"

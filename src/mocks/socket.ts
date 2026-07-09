@@ -7,9 +7,7 @@ type WebSocketEvent = Event | MessageEvent | CloseEvent
 
 type WebSocketEventListener = (this: MockWebSocket, ev: WebSocketEvent) => void
 
-type WebSocketEventListenerOrHandle =
-  | WebSocketEventListener
-  | { handleEvent: WebSocketEventListener }
+type WebSocketEventListenerOrHandle = WebSocketEventListener | { handleEvent: WebSocketEventListener }
 
 function createMessagePayload(payload: Record<string, unknown>): MessageEvent {
   return new MessageEvent('message', { data: JSON.stringify(payload) })
@@ -45,40 +43,29 @@ export class MockWebSocket {
 
   addEventListener(
     type: 'open',
-    listener:
-      | ((this: MockWebSocket, ev: Event) => void)
-      | { handleEvent: (this: MockWebSocket, ev: Event) => void },
+    listener: ((this: MockWebSocket, ev: Event) => void) | { handleEvent: (this: MockWebSocket, ev: Event) => void }
   ): void
   addEventListener(
     type: 'message',
     listener:
       | ((this: MockWebSocket, ev: MessageEvent) => void)
-      | { handleEvent: (this: MockWebSocket, ev: MessageEvent) => void },
+      | { handleEvent: (this: MockWebSocket, ev: MessageEvent) => void }
   ): void
   addEventListener(
     type: 'close',
     listener:
-      | ((this: MockWebSocket, ev: CloseEvent) => void)
-      | { handleEvent: (this: MockWebSocket, ev: CloseEvent) => void },
+      ((this: MockWebSocket, ev: CloseEvent) => void) | { handleEvent: (this: MockWebSocket, ev: CloseEvent) => void }
   ): void
   addEventListener(
     type: 'error',
-    listener:
-      | ((this: MockWebSocket, ev: Event) => void)
-      | { handleEvent: (this: MockWebSocket, ev: Event) => void },
+    listener: ((this: MockWebSocket, ev: Event) => void) | { handleEvent: (this: MockWebSocket, ev: Event) => void }
   ): void
-  addEventListener(
-    type: EventType,
-    listener: WebSocketEventListenerOrHandle,
-  ): void {
+  addEventListener(type: EventType, listener: WebSocketEventListenerOrHandle): void {
     this.listeners[type].push(listener)
   }
 
-  removeEventListener(
-    type: EventType,
-    listener: WebSocketEventListenerOrHandle,
-  ): void {
-    this.listeners[type] = this.listeners[type].filter((l) => l !== listener)
+  removeEventListener(type: EventType, listener: WebSocketEventListenerOrHandle): void {
+    this.listeners[type] = this.listeners[type].filter(l => l !== listener)
   }
 
   dispatchEvent(event: WebSocketEvent): boolean {
@@ -94,7 +81,7 @@ export class MockWebSocket {
       }
     }
 
-    this.listeners[type]?.forEach((listener) => {
+    this.listeners[type]?.forEach(listener => {
       if (typeof listener === 'function') {
         listener.call(this, event)
       } else {
@@ -130,9 +117,7 @@ export class MockWebSocket {
       switch (type) {
         case 'join': {
           const displayName =
-            typeof parsed.displayName === 'string' && parsed.displayName.trim()
-              ? parsed.displayName
-              : '匿名用户'
+            typeof parsed.displayName === 'string' && parsed.displayName.trim() ? parsed.displayName : '匿名用户'
           this.dispatchEvent(
             createMessagePayload({
               type: 'participant-joined',
@@ -143,13 +128,12 @@ export class MockWebSocket {
                 isMuted: false,
                 isVideoOff: false,
               },
-            }),
+            })
           )
           break
         }
         case 'message': {
-          const content =
-            typeof parsed.content === 'string' ? parsed.content : ''
+          const content = typeof parsed.content === 'string' ? parsed.content : ''
           this.dispatchEvent(
             createMessagePayload({
               type: 'message-received',
@@ -160,7 +144,7 @@ export class MockWebSocket {
                 content,
                 timestamp: MOCK_MESSAGE_TIMESTAMP,
               },
-            }),
+            })
           )
           break
         }
@@ -168,35 +152,26 @@ export class MockWebSocket {
           this.dispatchEvent(
             createMessagePayload({
               type: 'participant-left',
-              participantId:
-                typeof parsed.participantId === 'string'
-                  ? parsed.participantId
-                  : 'local-user',
-            }),
+              participantId: typeof parsed.participantId === 'string' ? parsed.participantId : 'local-user',
+            })
           )
           break
         case 'mute':
           this.dispatchEvent(
             createMessagePayload({
               type: 'mute-changed',
-              participantId:
-                typeof parsed.participantId === 'string'
-                  ? parsed.participantId
-                  : 'local-user',
+              participantId: typeof parsed.participantId === 'string' ? parsed.participantId : 'local-user',
               isMuted: typeof parsed.isMuted === 'boolean' ? parsed.isMuted : true,
-            }),
+            })
           )
           break
         case 'host':
           this.dispatchEvent(
             createMessagePayload({
               type: 'host-changed',
-              participantId:
-                typeof parsed.participantId === 'string'
-                  ? parsed.participantId
-                  : 'local-user',
+              participantId: typeof parsed.participantId === 'string' ? parsed.participantId : 'local-user',
               isHost: typeof parsed.isHost === 'boolean' ? parsed.isHost : true,
-            }),
+            })
           )
           break
         default:
@@ -207,7 +182,7 @@ export class MockWebSocket {
   }
 
   close(): void {
-    this.timers.forEach((timer) => clearTimeout(timer))
+    this.timers.forEach(timer => clearTimeout(timer))
     this.timers = []
     this.readyState = WebSocket.CLOSED
     this.dispatchEvent(
@@ -215,7 +190,7 @@ export class MockWebSocket {
         wasClean: true,
         code: 1000,
         reason: '',
-      }),
+      })
     )
   }
 }

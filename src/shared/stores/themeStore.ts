@@ -79,7 +79,7 @@ export const useThemeStore = defineStore('theme', () => {
     cleanup()
 
     mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQueryListener = (e) => {
+    mediaQueryListener = e => {
       // 系统主题变化时同步刷新 systemTheme，让 resolvedTheme 自动重新计算
       systemTheme.value = e.matches ? 'dark' : 'light'
       if (theme.value === 'system') {

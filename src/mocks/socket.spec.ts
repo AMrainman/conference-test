@@ -75,9 +75,7 @@ describe('MockWebSocket', () => {
   it('连接未打开时 send 抛出 InvalidStateError', () => {
     const ws = new MockWebSocket('ws://localhost')
     expect(() => ws.send(JSON.stringify({ type: 'join' }))).toThrow(DOMException)
-    expect(() => ws.send(JSON.stringify({ type: 'join' }))).toThrow(
-      /InvalidStateError/,
-    )
+    expect(() => ws.send(JSON.stringify({ type: 'join' }))).toThrow(/InvalidStateError/)
   })
 
   it('处理 message 消息并触发 message-received 消息事件', () => {

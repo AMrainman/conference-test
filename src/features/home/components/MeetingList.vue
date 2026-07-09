@@ -21,7 +21,7 @@ async function fetchMeetings() {
       throw new Error('获取会议列表失败')
     }
 
-    const result = await response.json() as { data: Meeting[] }
+    const result = (await response.json()) as { data: Meeting[] }
     meetings.value = result.data
   } catch {
     errorMessage.value = '加载会议列表失败，请稍后重试'
@@ -35,9 +35,7 @@ onMounted(fetchMeetings)
 
 <template>
   <section>
-    <h2 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
-      会议列表
-    </h2>
+    <h2 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">会议列表</h2>
 
     <div
       v-if="isLoading"
@@ -54,12 +52,7 @@ onMounted(fetchMeetings)
     </div>
 
     <ul v-else-if="meetings.length > 0" class="flex flex-col gap-3">
-      <MeetingListItem
-        v-for="meeting in meetings"
-        :key="meeting.id"
-        :meeting="meeting"
-        @join="emit('join', $event)"
-      />
+      <MeetingListItem v-for="meeting in meetings" :key="meeting.id" :meeting="meeting" @join="emit('join', $event)" />
     </ul>
 
     <div

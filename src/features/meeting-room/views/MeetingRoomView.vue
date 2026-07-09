@@ -87,9 +87,11 @@ async function leave() {
             <button
               type="button"
               class="flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
-              :class="activeSidebarTab === 'participants'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'"
+              :class="
+                activeSidebarTab === 'participants'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
+                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
+              "
               @click="uiStore.setActiveTab('participants')"
             >
               参会者
@@ -97,24 +99,19 @@ async function leave() {
             <button
               type="button"
               class="flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
-              :class="activeSidebarTab === 'chat'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'"
+              :class="
+                activeSidebarTab === 'chat'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
+                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
+              "
               @click="uiStore.setActiveTab('chat')"
             >
               聊天
             </button>
           </div>
 
-          <ParticipantPanel
-            v-if="activeSidebarTab === 'participants'"
-            :participants="participants"
-          />
-          <ChatPanel
-            v-else
-            :messages="messages"
-            @send="meetingStore.sendMessage"
-          />
+          <ParticipantPanel v-if="activeSidebarTab === 'participants'" :participants="participants" />
+          <ChatPanel v-else :messages="messages" @send="meetingStore.sendMessage" />
         </div>
       </Sidebar>
     </div>

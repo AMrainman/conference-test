@@ -29,20 +29,8 @@ function handleSubmit() {
 
 <template>
   <form class="@container flex flex-col gap-4" @submit.prevent="handleSubmit">
-    <Input
-      v-model="meetingId"
-      label="会议 ID"
-      placeholder="请输入 9 位会议 ID"
-      :error="meetingIdError"
-    />
-    <Input
-      v-model="displayName"
-      label="显示名称"
-      placeholder="请输入您的显示名称"
-      :error="displayNameError"
-    />
-    <Button type="submit" class="w-full @md:mt-2">
-      加入会议
-    </Button>
+    <Input v-model="meetingId" label="会议 ID" placeholder="请输入 9 位会议 ID" :error="meetingIdError" />
+    <Input v-model="displayName" label="显示名称" placeholder="请输入您的显示名称" :error="displayNameError" />
+    <Button type="submit" class="w-full @md:mt-2">加入会议</Button>
   </form>
 </template>

@@ -6,7 +6,7 @@ const meta: Meta<typeof ThemeToggle> = {
   component: ThemeToggle,
   title: 'Shared/ThemeToggle',
   decorators: [
-    (story) => ({
+    story => ({
       components: { story },
       setup() {
         setActivePinia(createPinia())

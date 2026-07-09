@@ -37,33 +37,20 @@ function handleBack() {
             stroke-width="2"
             aria-hidden="true"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 13l4 4L19 7"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
 
-        <h1 class="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100">
-          会议已结束
-        </h1>
+        <h1 class="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100">会议已结束</h1>
 
-        <p class="mb-6 text-slate-600 dark:text-slate-300">
-          会议号：{{ meetingId }}
-        </p>
+        <p class="mb-6 text-slate-600 dark:text-slate-300">会议号：{{ meetingId }}</p>
 
         <div class="mb-8 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <span>会议时长：</span>
           <span class="font-medium text-slate-700 dark:text-slate-200">{{ durationText }}</span>
         </div>
 
-        <Button
-          size="lg"
-          @click="handleBack"
-        >
-          返回首页
-        </Button>
+        <Button size="lg" @click="handleBack">返回首页</Button>
       </div>
     </div>
   </div>

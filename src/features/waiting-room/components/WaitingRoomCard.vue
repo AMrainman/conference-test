@@ -19,19 +19,13 @@ defineProps<Props>()
           aria-label="加载中"
         />
 
-        <h1
-          class="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100"
-        >
+        <h1 class="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100">
           {{ meetingTitle }}
         </h1>
 
-        <p class="mb-6 text-slate-600 dark:text-slate-300">
-          欢迎，{{ displayName }}
-        </p>
+        <p class="mb-6 text-slate-600 dark:text-slate-300">欢迎，{{ displayName }}</p>
 
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-          正在等候主持人准许入会，请稍候...
-        </p>
+        <p class="text-sm text-slate-500 dark:text-slate-400">正在等候主持人准许入会，请稍候...</p>
       </div>
     </div>
   </div>

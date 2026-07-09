@@ -27,7 +27,7 @@ describe('meetingStore', () => {
     server.use(
       http.get('/api/meetings/:id', () => {
         return HttpResponse.json({ data: mockMeeting })
-      }),
+      })
     )
 
     const store = useMeetingStore()
@@ -58,7 +58,7 @@ describe('meetingStore', () => {
     server.use(
       http.post('/api/meetings/:id/join', () => {
         return HttpResponse.json({ error: '会议已结束' }, { status: 403 })
-      }),
+      })
     )
 
     const store = useMeetingStore()
@@ -75,7 +75,7 @@ describe('meetingStore', () => {
     server.use(
       http.get('/api/meetings/:id', () => {
         return HttpResponse.json({ error: '获取会议信息失败' }, { status: 500 })
-      }),
+      })
     )
 
     const store = useMeetingStore()
@@ -150,7 +150,7 @@ describe('meetingStore', () => {
     server.use(
       http.get('/api/meetings/:id', () => {
         return HttpResponse.json({ data: mockMeeting })
-      }),
+      })
     )
 
     const store = useMeetingStore()
@@ -182,7 +182,7 @@ describe('meetingStore', () => {
       }),
       http.post('/api/meetings/:id/messages', () => {
         return HttpResponse.json({ error: '发送消息失败' }, { status: 500 })
-      }),
+      })
     )
 
     const store = useMeetingStore()
@@ -199,7 +199,7 @@ describe('meetingStore', () => {
     server.use(
       http.get('/api/meetings/:id', () => {
         return HttpResponse.json({ data: mockMeeting })
-      }),
+      })
     )
 
     const store = useMeetingStore()

@@ -5,7 +5,7 @@ import AppShell from '@/shared/components/AppShell.vue'
 
 const capturedError = ref<Error | null>(null)
 
-onErrorCaptured((err, _instance, _info) => {
+onErrorCaptured(err => {
   // 捕获应用级错误，展示降级 UI 并阻止继续向上传播
   capturedError.value = err instanceof Error ? err : new Error(String(err))
   return false
