@@ -3,6 +3,7 @@ interface Props {
   label: string
   active?: boolean
   danger?: boolean
+  labelClass?: string | string[]
 }
 
 withDefaults(defineProps<Props>(), { active: false, danger: false })
@@ -28,6 +29,6 @@ const emit = defineEmits<{
     @click="emit('click', $event)"
   >
     <slot />
-    <span class="text-xs">{{ label }}</span>
+    <span class="text-xs" :class="labelClass">{{ label }}</span>
   </button>
 </template>
