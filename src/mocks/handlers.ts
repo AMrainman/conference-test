@@ -1,5 +1,7 @@
 import { http, HttpResponse } from 'msw'
 
+import type { JoinMeetingPayload } from '@/shared/types'
+
 import { mockMeetings } from './data/meetings'
 
 export const handlers = [
@@ -14,7 +16,10 @@ export const handlers = [
   }),
 
   http.post('/api/meetings/:id/join', async ({ params, request }) => {
-    const body = (await request.json()) as { displayName: string }
+    const body = (await request.json()) as JoinMeetingPayload
+    if (!body.displayName) {
+      return HttpResponse.json({ error: 'displayName is required' }, { status: 400 })
+    }
     return HttpResponse.json({
       data: {
         meetingId: params.id,
@@ -26,6 +31,9 @@ export const handlers = [
 
   http.post('/api/meetings/:id/messages', async ({ request }) => {
     const body = (await request.json()) as { content: string }
+    if (!body.content) {
+      return HttpResponse.json({ error: 'content is required' }, { status: 400 })
+    }
     return HttpResponse.json({
       data: {
         id: `msg-${Date.now()}`,

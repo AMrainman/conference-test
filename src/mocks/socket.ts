@@ -22,12 +22,21 @@ export class MockWebSocket {
   }
 
   send(message: string) {
-    const parsed = JSON.parse(message)
+    let parsed: { type?: string }
+    try {
+      parsed = JSON.parse(message)
+    } catch {
+      this.emit('error', new Error('Invalid JSON message'))
+      return
+    }
+
     if (parsed.type === 'join') {
       setTimeout(() => {
         this.emit('message', {
-          type: 'participant-joined',
-          participant: mockParticipants[1],
+          data: JSON.stringify({
+            type: 'participant-joined',
+            participant: mockParticipants[1],
+          }),
         })
       }, 300)
     }
