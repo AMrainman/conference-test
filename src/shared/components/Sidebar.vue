@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import IconButton from './IconButton.vue'
 
 interface Props {
   open: boolean
@@ -21,9 +22,9 @@ const emit = defineEmits<{
     <div class="flex h-full flex-col">
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
         <h2 class="font-semibold">{{ title }}</h2>
-        <button aria-label="关闭" class="rounded p-1 hover:bg-slate-100 dark:hover:bg-slate-700" @click="emit('close')">
+        <IconButton label="关闭" @click="emit('close')">
           <XMarkIcon class="h-5 w-5" />
-        </button>
+        </IconButton>
       </div>
       <div class="@container flex-1 overflow-y-auto p-4">
         <slot />

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import {
   MicrophoneIcon,
   SpeakerXMarkIcon,
@@ -10,25 +9,19 @@ import {
 } from '@heroicons/vue/24/outline'
 import IconButton from './IconButton.vue'
 
+interface Props {
+  micOn?: boolean
+  videoOn?: boolean
+}
+
+withDefaults(defineProps<Props>(), { micOn: true, videoOn: true })
+
 const emit = defineEmits<{
   toggleMic: []
   toggleVideo: []
   toggleSidebar: []
   leave: []
 }>()
-
-const micOn = ref(true)
-const videoOn = ref(true)
-
-function toggleMic() {
-  micOn.value = !micOn.value
-  emit('toggleMic')
-}
-
-function toggleVideo() {
-  videoOn.value = !videoOn.value
-  emit('toggleVideo')
-}
 </script>
 
 <template>
@@ -36,14 +29,14 @@ function toggleVideo() {
     <IconButton
       :label="micOn ? '静音' : '解除静音'"
       :active="!micOn"
-      @click="toggleMic"
+      @click="emit('toggleMic')"
     >
       <component :is="micOn ? MicrophoneIcon : SpeakerXMarkIcon" class="h-5 w-5" />
     </IconButton>
     <IconButton
       :label="videoOn ? '停止视频' : '开启视频'"
       :active="!videoOn"
-      @click="toggleVideo"
+      @click="emit('toggleVideo')"
     >
       <component :is="videoOn ? VideoCameraIcon : VideoCameraSlashIcon" class="h-5 w-5" />
     </IconButton>
