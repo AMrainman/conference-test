@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-访问 http://localhost:5173
+访问 [http://localhost:5173](http://localhost:5173)
 
 ## 脚本说明
 
@@ -19,6 +19,26 @@ npm run dev
 - `npm run test`：运行 Vitest 测试
 - `npm run storybook`：启动 Storybook
 - `npm run build-storybook`：构建 Storybook 静态站点
+
+## 目录结构
+
+- `src/app/` — 应用入口与全局路由
+  - `main.ts` 负责启动 MSW worker、挂载 Pinia/Vue Router、初始化主题
+  - `router.ts` 定义页面路由，所有视图按功能域懒加载
+  - `App.vue` 应用级 Error Boundary
+- `src/features/` — 按业务功能组织，每个功能包含 `components/` 和 `views/`
+  - `home`、`join`、`pre-meeting`、`waiting-room`、`meeting-room`、`meeting-ended`
+- `src/shared/` — 跨功能复用
+  - `components/` 通用 UI 组件
+  - `stores/` Pinia store（themeStore、meetingStore、uiStore）
+  - `composables/` 通用组合式函数
+  - `types/` 全局 TypeScript 类型
+  - `styles/` 全局样式
+- `src/mocks/` — MSW mock
+  - `browser.ts` 开发环境 worker
+  - `handlers.ts` REST API handlers
+  - `socket.ts` WebSocket mock
+  - `data/` mock 数据与辅助函数
 
 ## 容器自适应方案注意事项
 
