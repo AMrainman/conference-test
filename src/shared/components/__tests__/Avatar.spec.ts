@@ -44,4 +44,20 @@ describe('Avatar', () => {
     const wrapper = mount(Avatar, { props: { name: '张三' } })
     expect(wrapper.text()).toBe('张三')
   })
+
+  it.each([
+    { src: 'https://example.com/a.jpg', expected: true, desc: '' },
+    { src: 'http://example.com/a.jpg', expected: true, desc: '' },
+    { src: '/avatar.jpg', expected: true, desc: '' },
+    { src: 'data:image/png;base64,abc', expected: true, desc: '' },
+    { src: 'javascript:alert(1)', expected: false, desc: '不' },
+    { src: '//evil.com/avatar.jpg', expected: false, desc: '不' },
+    { src: 'vbscript:msgbox(1)', expected: false, desc: '不' },
+  ])('当 src 为 "$src" 时$desc渲染头像图片', ({ src, expected }) => {
+    const wrapper = mount(Avatar, { props: { name: '张三', src } })
+    expect(wrapper.find('img').exists()).toBe(expected)
+    if (!expected) {
+      expect(wrapper.text()).toBe('张三')
+    }
+  })
 })

@@ -27,6 +27,8 @@ export class MockWebSocket {
     error: [],
   }
 
+  private timers: ReturnType<typeof setTimeout>[] = []
+
   readyState: number = WebSocket.CONNECTING
   onopen: ((this: MockWebSocket, ev: Event) => void) | null = null
   onmessage: ((this: MockWebSocket, ev: MessageEvent) => void) | null = null
@@ -34,10 +36,11 @@ export class MockWebSocket {
   onerror: ((this: MockWebSocket, ev: Event) => void) | null = null
 
   constructor(public url: string) {
-    setTimeout(() => {
+    const openTimer = setTimeout(() => {
       this.readyState = WebSocket.OPEN
       this.dispatchEvent(new Event('open'))
     }, 100)
+    this.timers.push(openTimer)
   }
 
   addEventListener(
@@ -123,7 +126,7 @@ export class MockWebSocket {
 
     const type = parsed.type
 
-    setTimeout(() => {
+    const sendTimer = setTimeout(() => {
       switch (type) {
         case 'join': {
           const displayName =
@@ -200,9 +203,12 @@ export class MockWebSocket {
           this.dispatchEvent(new Event('error'))
       }
     }, 300)
+    this.timers.push(sendTimer)
   }
 
   close(): void {
+    this.timers.forEach((timer) => clearTimeout(timer))
+    this.timers = []
     this.readyState = WebSocket.CLOSED
     this.dispatchEvent(
       new CloseEvent('close', {

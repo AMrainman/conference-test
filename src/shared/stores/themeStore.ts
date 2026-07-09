@@ -49,6 +49,14 @@ export const useThemeStore = defineStore('theme', () => {
     return theme.value === 'system' ? systemTheme.value : theme.value
   })
 
+  function cleanup() {
+    if (mediaQueryList && mediaQueryListener) {
+      mediaQueryList.removeEventListener('change', mediaQueryListener)
+    }
+    mediaQueryList = undefined
+    mediaQueryListener = undefined
+  }
+
   function setTheme(value: Theme) {
     theme.value = value
     if (value === 'system') {
@@ -68,9 +76,7 @@ export const useThemeStore = defineStore('theme', () => {
     applyTheme(resolvedTheme.value)
 
     // 重新初始化前先移除旧的监听器
-    if (mediaQueryList && mediaQueryListener) {
-      mediaQueryList.removeEventListener('change', mediaQueryListener)
-    }
+    cleanup()
 
     mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
     mediaQueryListener = (e) => {
@@ -83,5 +89,5 @@ export const useThemeStore = defineStore('theme', () => {
     mediaQueryList.addEventListener('change', mediaQueryListener)
   }
 
-  return { theme, resolvedTheme, setTheme, initTheme }
+  return { theme, resolvedTheme, setTheme, initTheme, cleanup }
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
@@ -17,7 +17,7 @@ const router = useRouter()
 const meetingStore = useMeetingStore()
 const uiStore = useUiStore()
 
-const { currentMeeting, participants, localUser, messages, isMuted, isVideoOff } = storeToRefs(meetingStore)
+const { currentMeeting, participants, messages, isMuted, isVideoOff } = storeToRefs(meetingStore)
 const { sidebarOpen, activeSidebarTab } = storeToRefs(uiStore)
 
 const meetingId = computed(() => {
@@ -26,8 +26,6 @@ const meetingId = computed(() => {
   return id ?? ''
 })
 const meetingTitle = computed(() => currentMeeting.value?.title ?? '会议中')
-
-const isLeaving = ref(false)
 
 onMounted(async () => {
   if (!meetingId.value) {
@@ -40,17 +38,7 @@ onUnmounted(() => {
   meetingStore.leave()
 })
 
-watch(
-  () => localUser.value,
-  (user) => {
-    if (user === null && !isLeaving.value) {
-      router.replace('/')
-    }
-  },
-)
-
 async function leave() {
-  isLeaving.value = true
   const id = meetingId.value
   meetingStore.leave()
   if (id) {

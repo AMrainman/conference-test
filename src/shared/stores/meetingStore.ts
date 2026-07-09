@@ -3,6 +3,66 @@ import { computed, ref } from 'vue'
 
 import type { ChatMessage, Meeting, Participant } from '@/shared/types'
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function hasStringFields<T extends Record<string, string>>(
+  value: unknown,
+  fields: T,
+): value is Record<keyof T, string> {
+  if (!isRecord(value)) {
+    return false
+  }
+  return Object.entries(fields).every(
+    ([key, type]) => typeof value[key] === type,
+  )
+}
+
+function isMeeting(value: unknown): value is Meeting {
+  return (
+    hasStringFields(value, {
+      id: 'string',
+      title: 'string',
+      hostId: 'string',
+      startTime: 'string',
+      status: 'string',
+    }) &&
+    ['scheduled', 'live', 'ended'].includes(value.status)
+  )
+}
+
+function isJoinData(
+  value: unknown,
+): value is { meetingId: string; participantId: string; displayName: string } {
+  return hasStringFields(value, {
+    meetingId: 'string',
+    participantId: 'string',
+    displayName: 'string',
+  })
+}
+
+function isChatMessage(value: unknown): value is ChatMessage {
+  return hasStringFields(value, {
+    id: 'string',
+    senderId: 'string',
+    senderName: 'string',
+    content: 'string',
+    timestamp: 'string',
+  })
+}
+
+function extractData<T>(value: unknown, guard: (value: unknown) => value is T): T {
+  if (!isRecord(value) || !('data' in value)) {
+    throw new Error('接口返回格式异常')
+  }
+  const data = value.data
+  if (!guard(data)) {
+    throw new Error('接口返回数据格式异常')
+  }
+  return data
+}
+
 export const useMeetingStore = defineStore('meeting', () => {
   // 当前会议信息
   const currentMeeting = ref<Meeting | null>(null)
@@ -42,9 +102,7 @@ export const useMeetingStore = defineStore('meeting', () => {
         throw new Error(result.error ?? '加入会议失败')
       }
 
-      const joinResult = (await joinResponse.json()) as {
-        data: { meetingId: string; participantId: string; displayName: string }
-      }
+      const joinResult = extractData(await joinResponse.json(), isJoinData)
 
       const meetingResponse = await fetch(`/api/meetings/${meetingId}`)
       if (!meetingResponse.ok) {
@@ -52,16 +110,16 @@ export const useMeetingStore = defineStore('meeting', () => {
         throw new Error(result.error ?? '获取会议信息失败')
       }
 
-      const meetingResult = (await meetingResponse.json()) as { data: Meeting }
+      const meetingResult = extractData(await meetingResponse.json(), isMeeting)
 
       localUser.value = {
-        id: joinResult.data.participantId,
-        displayName: joinResult.data.displayName,
-        isHost: meetingResult.data.hostId === joinResult.data.participantId,
+        id: joinResult.participantId,
+        displayName: joinResult.displayName,
+        isHost: meetingResult.hostId === joinResult.participantId,
         isMuted: isMuted.value,
         isVideoOff: isVideoOff.value,
       }
-      currentMeeting.value = meetingResult.data
+      currentMeeting.value = meetingResult
       participants.value = [localUser.value]
     } catch (err) {
       error.value = err instanceof Error ? err.message : '未知错误'
@@ -119,8 +177,8 @@ export const useMeetingStore = defineStore('meeting', () => {
         throw new Error(result.error ?? '发送消息失败')
       }
 
-      const result = (await response.json()) as { data: ChatMessage }
-      messages.value.push(result.data)
+      const result = extractData(await response.json(), isChatMessage)
+      messages.value.push(result)
     } catch (err) {
       error.value = err instanceof Error ? err.message : '未知错误'
     }
