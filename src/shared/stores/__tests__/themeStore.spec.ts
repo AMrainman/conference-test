@@ -15,7 +15,7 @@ describe('themeStore', () => {
     expect(store.theme).toBe('system')
   })
 
-  it('setTheme light 会添加 dark 类', () => {
+  it('setTheme dark 会添加 dark 类并保存到 localStorage', () => {
     const store = useThemeStore()
     store.setTheme('dark')
     expect(store.theme).toBe('dark')

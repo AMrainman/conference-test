@@ -19,6 +19,10 @@ function applyTheme(theme: 'light' | 'dark') {
 export const useThemeStore = defineStore('theme', () => {
   const theme = ref<Theme>('system')
 
+  // 用于清理上一次的系统主题监听器，避免重复注册导致泄漏
+  let mediaQueryList: MediaQueryList | undefined
+  let mediaQueryListener: ((event: MediaQueryListEvent) => void) | undefined
+
   const resolvedTheme = computed(() => {
     return theme.value === 'system' ? getSystemTheme() : theme.value
   })
@@ -34,11 +38,18 @@ export const useThemeStore = defineStore('theme', () => {
     theme.value = saved ?? 'system'
     applyTheme(resolvedTheme.value)
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    // 重新初始化前先移除旧的监听器
+    if (mediaQueryList && mediaQueryListener) {
+      mediaQueryList.removeEventListener('change', mediaQueryListener)
+    }
+
+    mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQueryListener = (e) => {
       if (theme.value === 'system') {
         applyTheme(e.matches ? 'dark' : 'light')
       }
-    })
+    }
+    mediaQueryList.addEventListener('change', mediaQueryListener)
   }
 
   return { theme, resolvedTheme, setTheme, initTheme }
