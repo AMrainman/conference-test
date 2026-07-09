@@ -34,8 +34,8 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   function initTheme() {
-    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
-    theme.value = saved ?? 'system'
+    const saved = localStorage.getItem(STORAGE_KEY)
+    theme.value = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system'
     applyTheme(resolvedTheme.value)
 
     // 重新初始化前先移除旧的监听器
