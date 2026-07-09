@@ -17,6 +17,8 @@ const emit = defineEmits<{
   <aside
     class="absolute inset-y-0 right-0 z-40 w-80 transform bg-white shadow-xl transition-transform dark:bg-slate-800"
     :class="open ? 'translate-x-0' : 'translate-x-full'"
+    :aria-hidden="!open"
+    :inert="!open"
   >
     <div class="flex h-full flex-col">
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">

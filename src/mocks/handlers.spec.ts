@@ -1,20 +1,7 @@
 // @vitest-environment jsdom
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
-import { server } from './server'
 import { resetMockParticipantIds } from './data/participantIds'
-
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'error' })
-})
-
-afterEach(() => {
-  server.resetHandlers()
-})
-
-afterAll(() => {
-  server.close()
-})
 
 describe('handlers', () => {
   beforeEach(() => {
