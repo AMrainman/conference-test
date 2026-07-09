@@ -11,8 +11,17 @@ describe('Avatar', () => {
 
   it('有头像时渲染 img', () => {
     const wrapper = mount(Avatar, { props: { name: '张三', src: 'https://example.com/a.jpg' } })
-    expect(wrapper.find('img').exists()).toBe(true)
-    expect(wrapper.find('img').attributes('alt')).toBe('张三')
+    const img = wrapper.find('img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('src')).toBe('https://example.com/a.jpg')
+    expect(img.attributes('alt')).toBe('张三')
+  })
+
+  it('图片加载失败时回退到姓名首字母', async () => {
+    const wrapper = mount(Avatar, { props: { name: 'Li Ming', src: 'https://example.com/broken.jpg' } })
+    await wrapper.find('img').trigger('error')
+    expect(wrapper.find('img').exists()).toBe(false)
+    expect(wrapper.text()).toBe('LM')
   })
 
   it.each([
@@ -31,7 +40,7 @@ describe('Avatar', () => {
     expect(wrapper.text()).toBe('')
   })
 
-  it('单字/单词姓名取前两个字符大写', () => {
+  it('单字/单词姓名取前两个字符', () => {
     const wrapper = mount(Avatar, { props: { name: '张三' } })
     expect(wrapper.text()).toBe('张三')
   })
