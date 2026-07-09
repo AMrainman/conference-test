@@ -27,7 +27,7 @@
 | 路由 | Vue Router 4 | `createWebHistory` 模式 |
 | 状态管理 | Pinia | setup store 写法 |
 | 样式 | Tailwind CSS | 配合 `@tailwindcss/container-queries` 插件 |
-| 无样式交互库 | Headless UI (Vue) / Radix Vue primitive | 仅取交互行为，样式完全自定义 |
+| 无样式交互库 | Headless UI (Vue) | 仅取交互行为，样式完全自定义 |
 | 组件文档 | Storybook 8 | 覆盖全部核心组件，支持主题切换 |
 | 测试 | Vitest + `@vue/test-utils` | 单元/组件测试 |
 | 类型检查 | `vue-tsc --noEmit` | 作为提交前/CI 检查 |
