@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/vue/24/outline'
 import { useTheme } from '@/shared/composables/useTheme'
 import type { Theme } from '@/shared/types'
 
 const { theme, setTheme } = useTheme()
 
-const options: { value: Theme; label: string; icon: typeof SunIcon }[] = [
+const options: { value: Theme; label: string; icon: Component }[] = [
   { value: 'light', label: '浅色', icon: SunIcon },
   { value: 'dark', label: '深色', icon: MoonIcon },
   { value: 'system', label: '跟随系统', icon: ComputerDesktopIcon },
@@ -17,6 +18,7 @@ const options: { value: Theme; label: string; icon: typeof SunIcon }[] = [
     <button
       v-for="opt in options"
       :key="opt.value"
+      type="button"
       :aria-label="opt.label"
       :aria-pressed="theme === opt.value"
       class="flex items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors"

@@ -63,6 +63,16 @@ describe('themeStore', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(true)
   })
 
+  it('initTheme 在 localStorage 值为非法时回退到 system', () => {
+    mockMatchMedia(false)
+    localStorage.setItem('app-theme', 'invalid-value')
+    const store = useThemeStore()
+    store.initTheme()
+    expect(store.theme).toBe('system')
+    expect(store.resolvedTheme).toBe('light')
+    expect(document.documentElement.classList.contains('dark')).toBe(false)
+  })
+
   it('initTheme 在 system 模式下监听系统主题变化并应用', () => {
     const mql = mockMatchMedia(false)
     const store = useThemeStore()
