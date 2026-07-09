@@ -1,6 +1,5 @@
-import { mockParticipants } from './data/participants'
-
-const MOCK_MESSAGE_TIMESTAMP = '2024-01-01T10:00:00.000Z'
+import { MOCK_MESSAGE_TIMESTAMP } from './data/constants'
+import { generateMockParticipantId } from './data/participantIds'
 
 type EventType = 'open' | 'message' | 'close' | 'error'
 
@@ -104,6 +103,10 @@ export class MockWebSocket {
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+    if (this.readyState !== WebSocket.OPEN) {
+      throw new DOMException('InvalidStateError', 'InvalidStateError')
+    }
+
     // mock 层仅处理文本消息
     if (typeof data !== 'string') {
       this.dispatchEvent(new Event('error'))
@@ -122,14 +125,25 @@ export class MockWebSocket {
 
     setTimeout(() => {
       switch (type) {
-        case 'join':
+        case 'join': {
+          const displayName =
+            typeof parsed.displayName === 'string' && parsed.displayName.trim()
+              ? parsed.displayName
+              : '匿名用户'
           this.dispatchEvent(
             createMessagePayload({
               type: 'participant-joined',
-              participant: mockParticipants[1],
+              participant: {
+                id: generateMockParticipantId(),
+                displayName,
+                isHost: false,
+                isMuted: false,
+                isVideoOff: false,
+              },
             }),
           )
           break
+        }
         case 'message': {
           const content =
             typeof parsed.content === 'string' ? parsed.content : ''

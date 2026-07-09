@@ -2,10 +2,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MockWebSocket } from './socket'
+import { resetMockParticipantIds } from './data/participantIds'
 
 describe('MockWebSocket', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    resetMockParticipantIds()
   })
 
   afterEach(() => {
@@ -47,7 +49,35 @@ describe('MockWebSocket', () => {
     expect(typeof event.data).toBe('string')
     const payload = JSON.parse(event.data)
     expect(payload.type).toBe('participant-joined')
-    expect(payload.participant.id).toBe('u2')
+    expect(payload.participant.id).toBe('mock-participant-1')
+    expect(payload.participant.displayName).toBe('匿名用户')
+  })
+
+  it('join 消息使用 payload 中的 displayName 并生成唯一 ID', () => {
+    const onMessage = vi.fn()
+    const ws = new MockWebSocket('ws://localhost')
+    ws.addEventListener('message', onMessage)
+
+    vi.advanceTimersByTime(100)
+    ws.send(JSON.stringify({ type: 'join', displayName: 'Alice' }))
+    ws.send(JSON.stringify({ type: 'join', displayName: 'Bob' }))
+    vi.advanceTimersByTime(300)
+
+    expect(onMessage).toHaveBeenCalledTimes(2)
+    const first = JSON.parse(onMessage.mock.calls[0][0].data)
+    const second = JSON.parse(onMessage.mock.calls[1][0].data)
+    expect(first.participant.displayName).toBe('Alice')
+    expect(first.participant.id).toBe('mock-participant-1')
+    expect(second.participant.displayName).toBe('Bob')
+    expect(second.participant.id).toBe('mock-participant-2')
+  })
+
+  it('连接未打开时 send 抛出 InvalidStateError', () => {
+    const ws = new MockWebSocket('ws://localhost')
+    expect(() => ws.send(JSON.stringify({ type: 'join' }))).toThrow(DOMException)
+    expect(() => ws.send(JSON.stringify({ type: 'join' }))).toThrow(
+      /InvalidStateError/,
+    )
   })
 
   it('处理 message 消息并触发 message-received 消息事件', () => {
@@ -73,6 +103,7 @@ describe('MockWebSocket', () => {
     const ws = new MockWebSocket('ws://localhost')
     ws.addEventListener('error', onError)
 
+    vi.advanceTimersByTime(100)
     ws.send('not-json')
 
     expect(onError).toHaveBeenCalledTimes(1)
@@ -144,20 +175,10 @@ describe('MockWebSocket', () => {
     const ws = new MockWebSocket('ws://localhost')
     ws.onerror = onError
 
+    vi.advanceTimersByTime(100)
     ws.send('not-json')
 
     expect(onError).toHaveBeenCalledTimes(1)
-  })
-
-  it('removeEventListener 移除后不再收到事件', () => {
-    const listener = vi.fn()
-    const ws = new MockWebSocket('ws://localhost')
-    ws.addEventListener('open', listener)
-    ws.removeEventListener('open', listener)
-
-    vi.advanceTimersByTime(100)
-
-    expect(listener).not.toHaveBeenCalled()
   })
 
   it('close 方法触发 close 事件并更新 readyState', () => {

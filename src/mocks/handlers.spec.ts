@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { server } from './server'
+import { resetMockParticipantIds } from './data/participantIds'
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' })
@@ -16,6 +17,9 @@ afterAll(() => {
 })
 
 describe('handlers', () => {
+  beforeEach(() => {
+    resetMockParticipantIds()
+  })
   it('GET /api/meetings 返回会议列表', async () => {
     const response = await fetch('/api/meetings')
     expect(response.status).toBe(200)
@@ -27,6 +31,8 @@ describe('handlers', () => {
   it('GET /api/meetings/:id 对未知 id 返回 404', async () => {
     const response = await fetch('/api/meetings/unknown-id')
     expect(response.status).toBe(404)
+    const json = await response.json()
+    expect(json.error).toContain('Meeting not found')
   })
 
   it('POST /api/meetings/:id/join 缺少 displayName 返回 400', async () => {
@@ -68,9 +74,37 @@ describe('handlers', () => {
     const json = await response.json()
     expect(json.data).toEqual({
       meetingId: '123-456-789',
-      participantId: 'local-user',
+      participantId: 'mock-participant-1',
       displayName: '测试用户',
     })
+  })
+
+  it('POST /api/meetings/:id/join 空或纯空白 displayName 返回 400', async () => {
+    for (const displayName of ['', '   ', '\t\n']) {
+      const response = await fetch('/api/meetings/123-456-789/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName }),
+      })
+      expect(response.status).toBe(400)
+      const json = await response.json()
+      expect(json.error).toContain('displayName')
+    }
+  })
+
+  it('POST /api/meetings/:id/join 多次调用生成唯一 participantId', async () => {
+    const ids: string[] = []
+    for (const displayName of ['用户一', '用户二']) {
+      const response = await fetch('/api/meetings/123-456-789/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName }),
+      })
+      expect(response.status).toBe(200)
+      const json = await response.json()
+      ids.push(json.data.participantId)
+    }
+    expect(ids).toEqual(['mock-participant-1', 'mock-participant-2'])
   })
 
   it('POST /api/meetings/:id/join 对非法 JSON 返回 400', async () => {
