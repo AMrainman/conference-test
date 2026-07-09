@@ -30,6 +30,7 @@
 | 无样式交互库 | Headless UI (Vue) | 仅取交互行为，样式完全自定义 |
 | 组件文档 | Storybook 8 | 覆盖全部核心组件，支持主题切换 |
 | 测试 | Vitest + `@vue/test-utils` | 单元/组件测试 |
+| Mock 服务 | MSW (Mock Service Worker) 2.x | 拦截 REST/WebSocket，统一 mock 数据 |
 | 类型检查 | `vue-tsc --noEmit` | 作为提交前/CI 检查 |
 
 浏览器兼容目标：**现代浏览器最新 2 个版本**（Chrome、Edge、Safari、Firefox），原生支持 CSS 容器查询，无需 polyfill。
@@ -56,12 +57,12 @@ conference-test/
 │   │   ├── main.ts
 │   │   └── router.ts
 │   ├── features/                  # 业务模块
-│   │   ├── home/                  # 首页 / 会议列表
-│   │   ├── join/                  # 新建 / 加入会议
-│   │   ├── pre-meeting/           # 会前设置
-│   │   ├── waiting-room/          # 等候室
-│   │   ├── meeting-room/          # 会议中
-│   │   └── meeting-ended/         # 结束页
+│   ├── mocks/                     # MSW mock 数据与 handlers
+│   │   ├── browser.ts
+│   │   ├── server.ts
+│   │   ├── handlers.ts
+│   │   ├── socket.ts
+│   │   └── data/
 │   ├── shared/                    # 共享层
 │   │   ├── components/            # 通用 UI 组件
 │   │   ├── composables/           # 通用组合式函数
@@ -274,58 +275,91 @@ interface UIState {
 
 ---
 
-## 9. 错误处理
+## 9. MSW Mock 策略
 
-### 9.1 路由错误
+引入 **MSW 2.x** 作为统一的 mock 层，覆盖 REST API、WebSocket 事件、Storybook 数据、测试拦截四类场景。
+
+#### REST API Mock
+
+- 在 `src/mocks/handlers.ts` 中定义 handlers，覆盖会议系统未来可能对接的接口：
+  - `GET /api/meetings` — 会议列表
+  - `GET /api/meetings/:id` — 会议详情
+  - `POST /api/meetings/:id/join` — 加入会议
+  - `POST /api/meetings/:id/messages` — 发送聊天消息
+- `src/mocks/browser.ts` 注册 worker，仅在开发环境启用。
+- `src/mocks/server.ts` 供测试使用。
+
+#### WebSocket 实时事件 Mock
+
+- 在 `src/mocks/socket.ts` 中封装一个模拟 WebSocket 类。
+- 模拟事件： participant-joined、participant-left、message-received、mute-changed、host-changed。
+- `meetingStore` 通过统一的 socket adapter 消费事件，后续替换为真实 WebSocket 时只需改 adapter。
+
+#### Storybook 集成
+
+- Storybook 全局加载 MSW worker，保证组件故事中的 API 调用有确定返回值。
+- 每个 story 可通过 MSW 的 `parameters.msw.handlers` 覆盖特定接口响应。
+
+#### Vitest 集成
+
+- 在 `vitest.setup.ts` 中启用 `msw/server`。
+- 每个测试用例通过 `server.use(...)` 局部覆盖 handlers，避免测试间数据污染。
+- 禁止测试直接访问真实后端或外部 API。
+
+---
+
+## 10. 错误处理
+
+### 10.1 路由错误
 
 - 404 页面捕获所有未匹配路由。
 - 路由守卫校验必要参数（如 `meetingId`），缺失时重定向到首页。
 
-### 9.2 渲染错误
+### 10.2 渲染错误
 
 - `App.vue` 顶层使用 `onErrorCaptured` 捕获未处理渲染错误，降级显示友好提示。
 - `MeetingRoomView` 等复杂页面内部可用 `ErrorBoundary` 组件隔离。
 
-### 9.3 状态错误
+### 10.3 状态错误
 
 - `meetingStore` 的异步 action 用 `try/catch` 包装，暴露 `error` 状态。
 - UI 根据 `error` 状态显示重试按钮或提示信息。
 
-### 9.4 主题错误
+### 10.4 主题错误
 
 - `themeStore.initTheme()` 失败时回退到 `light`，不阻塞应用渲染。
 
-### 9.5 用户反馈
+### 10.5 用户反馈
 
 - 骨架阶段提供全局 toast 通知能力（基于 Headless UI + 自定义），显示操作结果。
 - 暂不要求全局错误上报。
 
 ---
 
-## 10. 测试策略
+## 11. 测试策略
 
-### 10.1 单元/组件测试
+### 11.1 单元/组件测试
 
-- 框架：`Vitest` + `@vue/test-utils`
+- 框架：`Vitest` + `@vue/test-utils` + `msw`
 - 覆盖重点：
   - `themeStore`：主题解析、localStorage 读写、系统偏好监听
-  - `meetingStore`：状态变更 action
+  - `meetingStore`：状态变更 action、MSW 拦截的 API 调用
   - Shared 组件：基础渲染、事件触发（Button、ThemeToggle、Modal）
-- mock 原则：不访问真实浏览器 API，`localStorage` 和 `matchMedia` 使用 `vi.stubGlobal` 模拟。
+- mock 原则：不访问真实浏览器 API 和外部服务，`localStorage`、`matchMedia` 使用 `vi.stubGlobal` 模拟；HTTP/WebSocket 统一走 MSW。
 
-### 10.2 视觉/交互测试
+### 11.2 视觉/交互测试
 
 - Storybook 作为视觉回归与容器查询调试工具。
 - 为 `VideoGrid`、`Toolbar`、`Sidebar` 等复杂组件提供不同容器尺寸和主题的故事。
 - 骨架阶段暂不上 Chromatic，但 story 结构保留扩展空间。
 
-### 10.3 E2E 测试
+### 11.3 E2E 测试
 
 - 骨架阶段暂不引入 Playwright/Cypress，后续核心链路稳定后再补充。
 
 ---
 
-## 11. 开发与构建脚本
+## 12. 开发与构建脚本
 
 推荐 `package.json` scripts：
 
@@ -344,11 +378,11 @@ interface UIState {
 
 ---
 
-## 12. README 关键内容预告
+## 13. README 关键内容预告
 
-README 中需包含以下两部分注意事项：
+README 中需包含以下三部分注意事项：
 
-### 12.1 容器自适应方案注意事项
+### 13.1 容器自适应方案注意事项
 
 1. 组件内部禁止使用 `md:`、`lg:` 等视口断点，必须在外层容器声明 `@container`。
 2. 页面级骨架布局（如全局导航、侧边栏折叠）可酌情使用媒体查询。
@@ -356,7 +390,7 @@ README 中需包含以下两部分注意事项：
 4. `tailwind.config.ts` 必须正确安装并配置 `@tailwindcss/container-queries` 插件。
 5. 容器断点默认值参见 `container-design.md`，不要随意覆盖。
 
-### 12.2 日间/夜间模式注意事项
+### 13.2 日间/夜间模式注意事项
 
 1. Tailwind 使用 `darkMode: 'class'`，主题类挂载在 `document.documentElement`。
 2. 默认行为是跟随系统偏好，用户手动切换后优先读取 `localStorage` 记忆值。
@@ -364,9 +398,17 @@ README 中需包含以下两部分注意事项：
 4. Storybook 预览区已配置主题切换，开发组件时务必在两种主题下检查。
 5. 切换主题时不要直接操作 DOM，统一通过 `themeStore.setTheme()`。
 
+### 13.3 MSW Mock 注意事项
+
+1. 开发环境通过 `src/mocks/browser.ts` 自动注册 MSW worker，无需手动启动 mock 服务。
+2. REST API handlers 统一放在 `src/mocks/handlers.ts`，按业务域分文件管理。
+3. WebSocket 模拟通过 `src/mocks/socket.ts` 提供，真实信令接入时只需替换 adapter。
+4. Storybook 在 `preview.ts` 中全局加载 MSW，单个 story 可通过 `parameters.msw.handlers` 局部覆盖。
+5. 测试环境在 `vitest.setup.ts` 中启用 `msw/server`，每个用例结束后清理 handlers，避免测试间污染。
+
 ---
 
-## 13. 风险与后续扩展
+## 14. 风险与后续扩展
 
 | 风险 | 说明 | 当前策略 |
 |---|---|---|
@@ -374,6 +416,7 @@ README 中需包含以下两部分注意事项：
 | 骨架膨胀 | 用户希望页面较多 | 每个页面只做 UI 壳，业务逻辑用 mock |
 | 主题 token 管理 | 颜色可能分散 | 统一收敛到 `tailwind.config.ts` |
 | Storybook 维护成本 | 组件多故事多 | 先保证核心组件有 story，结构标准化 |
+| MSW 与真实后端切换 | 模拟接口与真实接口可能存在字段差异 | 用 TypeScript 类型约束 request/response，切换时类型驱动 |
 
 后续扩展方向：
 - 用真实 WebRTC 替换 `VideoTile` 的占位视频。
@@ -382,6 +425,6 @@ README 中需包含以下两部分注意事项：
 
 ---
 
-## 14. 审批记录
+## 15. 审批记录
 
-- 2026-07-09：用户确认范围 A（纯前端 UI 骨架）、页面清单、Vue Router 4 + Pinia、Tailwind class 主题、Headless UI、经典会议布局、现代浏览器兼容、全组件 Storybook 覆盖、Feature-based 目录结构。
+- 2026-07-09：用户确认范围 A（纯前端 UI 骨架）、页面清单、Vue Router 4 + Pinia、Tailwind class 主题、Headless UI、经典会议布局、现代浏览器兼容、全组件 Storybook 覆盖、Feature-based 目录结构、MSW Mock 覆盖 REST/WebSocket/Storybook/测试四类场景。
