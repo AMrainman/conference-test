@@ -42,6 +42,30 @@ export class MockWebSocket {
   }
 
   addEventListener(
+    type: 'open',
+    listener:
+      | ((this: MockWebSocket, ev: Event) => void)
+      | { handleEvent: (this: MockWebSocket, ev: Event) => void },
+  ): void
+  addEventListener(
+    type: 'message',
+    listener:
+      | ((this: MockWebSocket, ev: MessageEvent) => void)
+      | { handleEvent: (this: MockWebSocket, ev: MessageEvent) => void },
+  ): void
+  addEventListener(
+    type: 'close',
+    listener:
+      | ((this: MockWebSocket, ev: CloseEvent) => void)
+      | { handleEvent: (this: MockWebSocket, ev: CloseEvent) => void },
+  ): void
+  addEventListener(
+    type: 'error',
+    listener:
+      | ((this: MockWebSocket, ev: Event) => void)
+      | { handleEvent: (this: MockWebSocket, ev: Event) => void },
+  ): void
+  addEventListener(
     type: EventType,
     listener: WebSocketEventListenerOrHandle,
   ): void {

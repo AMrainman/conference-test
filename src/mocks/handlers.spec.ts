@@ -51,6 +51,63 @@ describe('handlers', () => {
     expect(json.error).toContain('Meeting not found')
   })
 
+  it('GET /api/meetings/:id 返回指定会议', async () => {
+    const response = await fetch('/api/meetings/123-456-789')
+    expect(response.status).toBe(200)
+    const json = await response.json()
+    expect(json.data.id).toBe('123-456-789')
+  })
+
+  it('POST /api/meetings/:id/join 对有效输入返回成功载荷', async () => {
+    const response = await fetch('/api/meetings/123-456-789/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ displayName: '测试用户' }),
+    })
+    expect(response.status).toBe(200)
+    const json = await response.json()
+    expect(json.data).toEqual({
+      meetingId: '123-456-789',
+      participantId: 'local-user',
+      displayName: '测试用户',
+    })
+  })
+
+  it('POST /api/meetings/:id/join 对非法 JSON 返回 400', async () => {
+    const response = await fetch('/api/meetings/123-456-789/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{ invalid',
+    })
+    expect(response.status).toBe(400)
+    const json = await response.json()
+    expect(json.error).toBe('Invalid JSON body')
+  })
+
+  it('POST /api/meetings/:id/messages 空或纯空白内容返回 400', async () => {
+    for (const content of ['', '   ', '\t\n']) {
+      const response = await fetch('/api/meetings/123-456-789/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      })
+      expect(response.status).toBe(400)
+      const json = await response.json()
+      expect(json.error).toContain('content')
+    }
+  })
+
+  it('POST /api/meetings/:id/messages 对非法 JSON 返回 400', async () => {
+    const response = await fetch('/api/meetings/123-456-789/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{ invalid',
+    })
+    expect(response.status).toBe(400)
+    const json = await response.json()
+    expect(json.error).toBe('Invalid JSON body')
+  })
+
   it('POST /api/meetings/:id/messages 对未知会议返回 404', async () => {
     const response = await fetch('/api/meetings/unknown-id/messages', {
       method: 'POST',

@@ -29,6 +29,5 @@ export interface ChatMessage {
 }
 
 export interface JoinMeetingPayload {
-  meetingId: string
   displayName: string
 }

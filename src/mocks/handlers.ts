@@ -35,7 +35,13 @@ export const handlers = [
       return HttpResponse.json({ error: 'Meeting not found' }, { status: 404 })
     }
 
-    const body = await request.json()
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return HttpResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
+
     if (!isValidJoinPayload(body)) {
       return HttpResponse.json(
         { error: 'displayName is required and must be a string' },
@@ -58,7 +64,13 @@ export const handlers = [
       return HttpResponse.json({ error: 'Meeting not found' }, { status: 404 })
     }
 
-    const body = await request.json()
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return HttpResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
+
     if (!isObject(body) || typeof body.content !== 'string') {
       return HttpResponse.json(
         { error: 'content is required and must be a string' },
@@ -66,7 +78,7 @@ export const handlers = [
       )
     }
 
-    if (!body.content) {
+    if (!body.content.trim()) {
       return HttpResponse.json(
         { error: 'content is required and must be a string' },
         { status: 400 },
