@@ -22,6 +22,11 @@
     "vue": "^3.5.0",
     "vue-router": "^4.4.0"
   },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.6.1",
     "@storybook/addon-essentials": "^8.2.0",
