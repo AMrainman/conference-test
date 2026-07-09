@@ -22,4 +22,28 @@ describe('Button', () => {
     await wrapper.find('button').trigger('click')
     expect(wrapper.emitted('click')).toBeUndefined()
   })
+
+  it('danger 变体应用对应的背景色类', () => {
+    const wrapper = mount(Button, {
+      props: { variant: 'danger' },
+      slots: { default: 'Delete' },
+    })
+    expect(wrapper.classes()).toContain('bg-red-600')
+  })
+
+  it('lg 尺寸应用对应的内边距类', () => {
+    const wrapper = mount(Button, {
+      props: { size: 'lg' },
+      slots: { default: 'Large' },
+    })
+    expect(wrapper.classes()).toContain('px-6')
+  })
+
+  it('支持设置 submit 类型', () => {
+    const wrapper = mount(Button, {
+      props: { type: 'submit' },
+      slots: { default: 'Submit' },
+    })
+    expect(wrapper.find('button').attributes('type')).toBe('submit')
+  })
 })
