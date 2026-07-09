@@ -16,8 +16,10 @@ describe('Button', () => {
     expect(wrapper.emitted('click')).toHaveLength(1)
   })
 
-  it('disabled 时不可点击', () => {
+  it('disabled 时不可点击', async () => {
     const wrapper = mount(Button, { props: { disabled: true } })
     expect(wrapper.find('button').attributes('disabled')).toBeDefined()
+    await wrapper.find('button').trigger('click')
+    expect(wrapper.emitted('click')).toBeUndefined()
   })
 })
