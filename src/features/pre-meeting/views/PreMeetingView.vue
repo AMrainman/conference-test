@@ -21,10 +21,8 @@ async function enter() {
 
 <template>
   <div class="flex min-h-screen items-center justify-center px-4 py-6">
-    <div
-      class="@container w-full max-w-4xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
-    >
-      <h1 class="mb-6 text-center text-xl font-bold text-slate-900 dark:text-slate-100">会前设置</h1>
+    <div class="@container w-full max-w-4xl rounded-xl border border-border bg-surface p-6 shadow-sm">
+      <h1 class="mb-6 text-center text-xl font-bold text-text">会前设置</h1>
 
       <div class="grid grid-cols-1 gap-6 @lg:grid-cols-2">
         <DevicePreview :display-name="displayName" />

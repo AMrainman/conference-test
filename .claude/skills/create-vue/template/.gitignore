@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-ssr
+*.local
+coverage
+storybook-static
+*storybook.log
+.env
+.env.*
+!.env.example

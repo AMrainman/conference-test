@@ -35,18 +35,15 @@ onMounted(fetchMeetings)
 
 <template>
   <section>
-    <h2 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">会议列表</h2>
+    <h2 class="mb-4 text-lg font-semibold text-text">会议列表</h2>
 
-    <div
-      v-if="isLoading"
-      class="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-    >
+    <div v-if="isLoading" class="rounded-lg border border-border bg-surface p-8 text-center text-sm text-text-muted">
       加载中…
     </div>
 
     <div
       v-else-if="errorMessage"
-      class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400"
+      class="rounded-lg border border-danger-subtle bg-danger-subtle p-4 text-sm text-danger-text"
     >
       {{ errorMessage }}
     </div>
@@ -55,10 +52,7 @@ onMounted(fetchMeetings)
       <MeetingListItem v-for="meeting in meetings" :key="meeting.id" :meeting="meeting" @join="emit('join', $event)" />
     </ul>
 
-    <div
-      v-else
-      class="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-    >
+    <div v-else class="rounded-lg border border-border bg-surface p-8 text-center text-sm text-text-muted">
       暂无会议
     </div>
   </section>

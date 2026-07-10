@@ -33,12 +33,12 @@ function formatTime(timestamp: string) {
 <template>
   <div class="flex h-full flex-col">
     <div class="flex-1 space-y-3 overflow-y-auto">
-      <div v-for="message in messages" :key="message.id" class="rounded-lg bg-slate-100 p-3 dark:bg-slate-700">
+      <div v-for="message in messages" :key="message.id" class="rounded-lg bg-surface-secondary p-3">
         <div class="mb-1 flex items-center justify-between">
-          <span class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ message.senderName }}</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400">{{ formatTime(message.timestamp) }}</span>
+          <span class="text-sm font-medium text-text">{{ message.senderName }}</span>
+          <span class="text-xs text-text-muted">{{ formatTime(message.timestamp) }}</span>
         </div>
-        <p class="break-words text-sm text-slate-700 dark:text-slate-200">{{ message.content }}</p>
+        <p class="break-words text-sm text-text-secondary">{{ message.content }}</p>
       </div>
     </div>
 

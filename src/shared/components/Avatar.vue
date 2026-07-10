@@ -30,7 +30,7 @@ const safeSrc = computed(() => {
 
 <template>
   <div
-    class="flex items-center justify-center overflow-hidden rounded-full bg-primary-100 font-medium text-primary-700 dark:bg-primary-900 dark:text-primary-300"
+    class="flex items-center justify-center overflow-hidden rounded-full bg-primary-subtle font-medium text-primary"
     :class="[
       size === 'sm' && 'h-8 w-8 text-xs',
       size === 'md' && 'h-10 w-10 text-sm',

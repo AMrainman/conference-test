@@ -28,10 +28,8 @@ function createMeeting(payload: { displayName: string }) {
 
 <template>
   <div class="flex min-h-screen items-center justify-center px-4 py-6">
-    <div
-      class="@container w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
-    >
-      <h1 class="mb-6 text-center text-xl font-bold text-slate-900 dark:text-slate-100">
+    <div class="@container w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-sm">
+      <h1 class="mb-6 text-center text-xl font-bold text-text">
         {{ pageTitle }}
       </h1>
 

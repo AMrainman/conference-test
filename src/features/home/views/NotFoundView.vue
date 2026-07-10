@@ -11,8 +11,8 @@ function goHome() {
 
 <template>
   <div class="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-    <h1 class="mb-2 text-6xl font-bold text-slate-300 dark:text-slate-700">404</h1>
-    <p class="mb-6 text-lg text-slate-600 dark:text-slate-400">抱歉，你访问的页面不存在</p>
+    <h1 class="mb-2 text-6xl font-bold text-text-muted">404</h1>
+    <p class="mb-6 text-lg text-text-secondary">抱歉，你访问的页面不存在</p>
     <Button @click="goHome">返回首页</Button>
   </div>
 </template>

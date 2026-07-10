@@ -50,11 +50,11 @@ async function leave() {
 </script>
 
 <template>
-  <div class="relative flex h-screen flex-col overflow-hidden bg-slate-100 dark:bg-slate-900">
+  <div class="relative flex h-screen flex-col overflow-hidden bg-background">
     <MeetingHeader :title="meetingTitle" :meeting-id="meetingId">
       <button
         type="button"
-        class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+        class="rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-secondary"
         @click="uiStore.toggleSidebar"
       >
         侧边栏
@@ -63,7 +63,7 @@ async function leave() {
 
     <div
       v-if="meetingStore.error && !currentMeeting"
-      class="mx-4 mt-4 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700 dark:bg-red-900 dark:text-red-100"
+      class="mx-4 mt-4 rounded-lg bg-danger-subtle px-4 py-3 text-sm text-danger-text"
     >
       {{ meetingStore.error }}
     </div>
@@ -89,8 +89,8 @@ async function leave() {
               class="flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
               :class="
                 activeSidebarTab === 'participants'
-                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'bg-primary-subtle text-primary'
+                  : 'text-text-secondary hover:bg-surface-secondary'
               "
               @click="uiStore.setActiveTab('participants')"
             >
@@ -101,8 +101,8 @@ async function leave() {
               class="flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
               :class="
                 activeSidebarTab === 'chat'
-                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
+                  ? 'bg-primary-subtle text-primary'
+                  : 'text-text-secondary hover:bg-surface-secondary'
               "
               @click="uiStore.setActiveTab('chat')"
             >

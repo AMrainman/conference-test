@@ -30,7 +30,7 @@ const labelClass = ['hidden', '@md:inline']
 </script>
 
 <template>
-  <div class="@container flex items-center justify-center gap-2 bg-white p-3 shadow-lg dark:bg-slate-900">
+  <div class="@container flex items-center justify-center gap-2 bg-surface p-3 shadow-lg">
     <IconButton
       :label="micOn ? '静音' : '解除静音'"
       :active="!micOn"
@@ -65,13 +65,13 @@ const labelClass = ['hidden', '@md:inline']
       </MenuButton>
 
       <MenuItems
-        class="absolute bottom-full right-0 mb-2 w-40 rounded-lg bg-white p-1 shadow-lg ring-1 ring-black/5 dark:bg-slate-800"
+        class="absolute bottom-full right-0 mb-2 w-40 rounded-lg bg-surface p-1 shadow-lg ring-1 ring-overlay/5"
       >
         <MenuItem v-slot="{ active }">
           <button
             type="button"
-            class="flex w-full items-center gap-2 rounded px-3 py-2 text-sm text-slate-700 dark:text-slate-200"
-            :class="active && 'bg-slate-100 dark:bg-slate-700'"
+            class="flex w-full items-center gap-2 rounded px-3 py-2 text-sm text-text-secondary"
+            :class="active && 'bg-surface-secondary'"
             @click="emit('toggleSidebar')"
           >
             <UsersIcon class="h-4 w-4" />

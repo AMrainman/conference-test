@@ -15,18 +15,18 @@ const emit = defineEmits<{
 
 <template>
   <aside
-    class="absolute inset-y-0 right-0 z-40 w-80 transform bg-white shadow-xl transition-transform dark:bg-slate-800"
+    class="absolute inset-y-0 right-0 z-40 w-80 transform bg-surface shadow-xl transition-transform"
     :class="open ? 'translate-x-0' : 'translate-x-full'"
     :aria-hidden="!open"
     :inert="!open"
   >
     <div class="flex h-full flex-col">
-      <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
+      <div class="flex items-center justify-between border-b border-border px-4 py-3">
         <h2 class="font-semibold">{{ title }}</h2>
         <button
           type="button"
           aria-label="关闭"
-          class="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+          class="rounded-lg p-2 text-text-muted transition-colors hover:bg-surface-secondary"
           @click="emit('close')"
         >
           <XMarkIcon class="h-5 w-5" />

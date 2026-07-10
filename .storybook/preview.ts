@@ -49,7 +49,7 @@ const preview: Preview = {
         },
         template: `
           <div v-if="ready"><story /></div>
-          <div v-else class="p-4 text-slate-500">加载中...</div>
+          <div v-else class="p-4 text-text-muted">加载中...</div>
         `,
       }
     },

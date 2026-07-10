@@ -22,7 +22,7 @@ function createMeeting() {
 <template>
   <div class="mx-auto flex max-w-5xl flex-col px-4 py-6">
     <header class="mb-8 flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">视频会议</h1>
+      <h1 class="text-2xl font-bold text-text">视频会议</h1>
       <ThemeToggle />
     </header>
 
