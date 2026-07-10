@@ -1,30 +1,54 @@
 :root {
   /* 背景 */
-  --color-background: 248 250 252;
+  --color-background: 245 247 250;
   --color-surface: 255 255 255;
-  --color-surface-secondary: 241 245 249;
+  --color-surface-secondary: 248 250 252;
   --color-surface-elevated: 255 255 255;
 
   /* 边框 */
-  --color-border: 226 232 240;
-  --color-border-strong: 203 213 225;
+  --color-border: 228 231 237;
+  --color-border-strong: 212 215 222;
 
   /* 文字 */
-  --color-text: 15 23 42;
-  --color-text-secondary: 51 65 85;
-  --color-text-muted: 100 116 139;
+  --color-text: 48 49 51;
+  --color-text-secondary: 96 98 102;
+  --color-text-muted: 144 147 153;
 
   /* 主色 */
-  --color-primary: 37 99 235;
-  --color-primary-hover: 29 78 216;
-  --color-primary-subtle: 219 234 254;
+  --color-primary: 64 158 255;
+  --color-primary-hover: 102 177 255;
+  --color-primary-subtle: 236 245 255;
   --color-primary-text: 255 255 255;
 
+  /* 成功 */
+  --color-success: 22 163 74;
+  --color-success-hover: 21 128 61;
+  --color-success-subtle: 240 253 244;
+  --color-success-text: 22 101 52;
+
+  /* 警告 */
+  --color-warning: 230 162 60;
+  --color-warning-hover: 207 132 26;
+  --color-warning-subtle: 255 247 230;
+  --color-warning-text: 146 64 14;
+
+  /* 信息 */
+  --color-info: 64 158 255;
+  --color-info-hover: 51 126 204;
+  --color-info-subtle: 236 245 255;
+  --color-info-text: 51 126 204;
+
+  /* 提醒 */
+  --color-reminder: 114 46 209;
+  --color-reminder-hover: 91 33 182;
+  --color-reminder-subtle: 245 240 255;
+  --color-reminder-text: 91 33 182;
+
   /* 危险 */
-  --color-danger: 220 38 38;
-  --color-danger-hover: 185 28 28;
-  --color-danger-subtle: 254 226 226;
-  --color-danger-text: 185 28 28;
+  --color-danger: 217 54 62;
+  --color-danger-hover: 183 45 53;
+  --color-danger-subtle: 255 241 240;
+  --color-danger-text: 183 45 53;
 
   /* 遮罩 */
   --color-overlay: 0 0 0;
@@ -34,28 +58,58 @@
 }
 
 .dark {
-  --color-background: 2 6 23;
-  --color-surface: 15 23 42;
+  /* 背景 */
+  --color-background: 11 18 32;
+  --color-surface: 17 24 39;
   --color-surface-secondary: 30 41 59;
-  --color-surface-elevated: 51 65 85;
+  --color-surface-elevated: 36 50 68;
 
+  /* 边框 */
   --color-border: 51 65 85;
   --color-border-strong: 71 85 105;
 
+  /* 文字 */
   --color-text: 248 250 252;
-  --color-text-secondary: 226 232 240;
+  --color-text-secondary: 203 213 225;
   --color-text-muted: 148 163 184;
 
-  --color-primary: 59 130 246;
-  --color-primary-hover: 96 165 250;
-  --color-primary-subtle: 30 58 138;
+  /* 主色 */
+  --color-primary: 64 158 255;
+  --color-primary-hover: 121 187 255;
+  --color-primary-subtle: 21 61 103;
   --color-primary-text: 255 255 255;
 
+  /* 成功 */
+  --color-success: 74 222 128;
+  --color-success-hover: 134 239 172;
+  --color-success-subtle: 20 83 45;
+  --color-success-text: 187 247 208;
+
+  /* 警告 */
+  --color-warning: 251 191 36;
+  --color-warning-hover: 252 211 77;
+  --color-warning-subtle: 120 53 15;
+  --color-warning-text: 253 230 138;
+
+  /* 信息 */
+  --color-info: 121 187 255;
+  --color-info-hover: 160 207 255;
+  --color-info-subtle: 21 61 103;
+  --color-info-text: 190 221 255;
+
+  /* 提醒 */
+  --color-reminder: 167 139 250;
+  --color-reminder-hover: 196 181 253;
+  --color-reminder-subtle: 76 29 149;
+  --color-reminder-text: 221 214 254;
+
+  /* 危险 */
   --color-danger: 248 113 113;
   --color-danger-hover: 252 165 165;
   --color-danger-subtle: 127 29 29;
-  --color-danger-text: 255 255 255;
+  --color-danger-text: 254 202 202;
 
+  /* 遮罩 */
   --color-overlay: 0 0 0;
 
   /* 视频/沉浸式区域固定深色背景 */
