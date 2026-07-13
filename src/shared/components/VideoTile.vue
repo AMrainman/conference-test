@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed, onMounted, onUpdated, ref } from 'vue'
 import { MicrophoneIcon } from '@heroicons/vue/24/solid'
+
+import type { IVideoTrack } from 'agora-rtc-sdk-ng'
 import Avatar from './Avatar.vue'
 import MicrophoneSlashIcon from './MicrophoneSlashIcon.vue'
 
@@ -9,13 +12,28 @@ interface Props {
   isMuted?: boolean
   isVideoOff?: boolean
   isSpeaking?: boolean
+  videoTrack?: IVideoTrack
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isMuted: false,
   isVideoOff: false,
   isSpeaking: false,
 })
+
+const videoRef = ref<HTMLVideoElement | null>(null)
+
+const showAvatar = computed(() => props.isVideoOff || !props.videoTrack)
+
+function playTrack() {
+  const el = videoRef.value
+  const track = props.videoTrack
+  if (!el || !track || props.isVideoOff) return
+  track.play(el)
+}
+
+onMounted(playTrack)
+onUpdated(playTrack)
 </script>
 
 <template>
@@ -23,13 +41,14 @@ withDefaults(defineProps<Props>(), {
     class="@container relative flex aspect-video items-center justify-center overflow-hidden rounded-xl bg-video-background"
     :class="isSpeaking && 'ring-2 ring-primary'"
   >
-    <!-- 视频占位：后续通过 WebRTC srcObject 绑定真实媒体流 -->
-    <video v-if="!isVideoOff" class="h-full w-full object-cover" autoplay muted playsinline />
-    <Avatar v-else :name="name" :src="avatarUrl" size="lg" />
+    <video v-show="!showAvatar" ref="videoRef" class="h-full w-full object-cover" autoplay muted playsinline />
+    <Avatar v-if="showAvatar" :name="name" :src="avatarUrl" size="lg" />
 
     <div class="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-overlay/50 px-2 py-1 text-xs text-text">
       <span>{{ name }}</span>
       <component :is="isMuted ? MicrophoneSlashIcon : MicrophoneIcon" class="h-3 w-3" />
     </div>
+
+    <slot />
   </div>
 </template>
