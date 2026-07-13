@@ -11,7 +11,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
+    // 使用绝对路径避免嵌套在其他 vitest 项目下时相对路径解析错误
+    setupFiles: [resolve(__dirname, 'vitest.setup.ts')],
     globals: true,
   },
 })
