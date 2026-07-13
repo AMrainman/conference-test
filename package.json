@@ -20,6 +20,7 @@
     "@headlessui/vue": "^1.7.22",
     "@heroicons/vue": "^2.1.5",
     "@tailwindcss/container-queries": "^0.1.1",
+    "agora-rtc-sdk-ng": "^4.24.5",
     "msw": "^2.3.5",
     "pinia": "^2.1.7",
     "vue": "^3.5.0",
