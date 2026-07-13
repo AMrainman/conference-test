@@ -1,0 +1,16 @@
+{
+  "name": "create-vue-skill",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "execa": "^9.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.0"
+  }
+}
