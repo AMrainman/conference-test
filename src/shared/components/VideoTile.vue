@@ -2,7 +2,7 @@
 import { computed, onMounted, onUpdated, ref } from 'vue'
 import { MicrophoneIcon } from '@heroicons/vue/24/solid'
 
-import type { IVideoTrack } from 'agora-rtc-sdk-ng'
+import type { ILocalVideoTrack, IRemoteVideoTrack } from 'agora-rtc-sdk-ng'
 import Avatar from './Avatar.vue'
 import MicrophoneSlashIcon from './MicrophoneSlashIcon.vue'
 
@@ -12,7 +12,7 @@ interface Props {
   isMuted?: boolean
   isVideoOff?: boolean
   isSpeaking?: boolean
-  videoTrack?: IVideoTrack
+  videoTrack?: ILocalVideoTrack | IRemoteVideoTrack
 }
 
 const props = withDefaults(defineProps<Props>(), {
