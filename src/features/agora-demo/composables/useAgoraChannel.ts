@@ -215,11 +215,13 @@ export function useAgoraChannel(channelId: Ref<string>) {
   }
 
   async function leave() {
-    await cleanup()
+    await cleanup(true)
   }
 
-  async function cleanup() {
-    disposed.value = true
+  async function cleanup(disposing = false) {
+    if (disposing) {
+      disposed.value = true
+    }
     stopStats()
 
     if (client.value) {
@@ -248,7 +250,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   }
 
   function handleBeforeUnload() {
-    void cleanup()
+    void cleanup(true)
   }
 
   onMounted(() => {
@@ -257,7 +259,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
 
   onBeforeUnmount(() => {
     window.removeEventListener('beforeunload', handleBeforeUnload)
-    void cleanup()
+    void cleanup(true)
   })
 
   return {
