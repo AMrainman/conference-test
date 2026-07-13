@@ -94,4 +94,3 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 - 不要生成 Home / About 之外的任何业务页面或业务组件。
 - 不要生成业务相关的 MSW handlers（只保留 `/api/health` 示例）。
 - 不要在组件内部使用 `md:`、`lg:` 等视口断点。
-- 每个 `AskUserQuestion` 问题的选项数量不得超过 4 个。
