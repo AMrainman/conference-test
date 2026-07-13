@@ -1,4 +1,5 @@
 import { onBeforeUnmount, onMounted, ref, shallowRef, type Ref } from 'vue'
+
 import AgoraRTC, {
   type IAgoraRTCClient,
   type IAgoraRTCRemoteUser,
@@ -57,13 +58,18 @@ function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
       }
 
       const nextRemoteStats: Record<string, RemoteStats> = {}
-      for (const [uid, audio] of Object.entries(remoteAudio)) {
+      const allUids = new Set([
+        ...Object.keys(remoteAudio),
+        ...Object.keys(remoteVideo),
+      ])
+      for (const uid of allUids) {
+        const audio = remoteAudio[uid]
         const video = remoteVideo[uid]
         nextRemoteStats[uid] = {
           uid,
-          audioReceiveBytes: audio.receiveBytes ?? 0,
-          audioReceivePackets: audio.receivePackets ?? 0,
-          audioReceivePacketsLost: audio.receivePacketsLost ?? 0,
+          audioReceiveBytes: audio?.receiveBytes ?? 0,
+          audioReceivePackets: audio?.receivePackets ?? 0,
+          audioReceivePacketsLost: audio?.receivePacketsLost ?? 0,
           videoReceiveBytes: video?.receiveBytes ?? 0,
           videoReceivePackets: video?.receivePackets ?? 0,
           videoReceivePacketsLost: video?.receivePacketsLost ?? 0,
@@ -91,7 +97,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   const localAudioTrack = shallowRef<IMicrophoneAudioTrack | null>(null)
   const localVideoTrack = shallowRef<ICameraVideoTrack | null>(null)
   const localUser = ref<AgoraLocalUser | null>(null)
-  const remoteUsers = ref<AgoraRemoteUser[]>([])
+  const remoteUsers = shallowRef<AgoraRemoteUser[]>([])
   const isMuted = ref(false)
   const isVideoOff = ref(false)
   const joined = ref(false)
@@ -136,37 +142,31 @@ export function useAgoraChannel(channelId: Ref<string>) {
     if (!client.value) return
     await client.value.subscribe(user, mediaType)
 
-    let remoteUser = remoteUsers.value.find((u) => u.uid === user.uid)
-    if (!remoteUser) {
-      remoteUser = {
-        uid: user.uid,
-        displayName: `用户 ${String(user.uid).slice(-4)}`,
-        hasVideo: false,
-        hasAudio: false,
-      }
-      remoteUsers.value.push(remoteUser)
+    const existing = remoteUsers.value.find((u) => u.uid === user.uid)
+    const base: AgoraRemoteUser = existing ?? {
+      uid: user.uid,
+      displayName: `用户 ${String(user.uid).slice(-4)}`,
+      hasVideo: false,
+      hasAudio: false,
     }
 
-    if (mediaType === 'video') {
-      remoteUser.videoTrack = user.videoTrack
-      remoteUser.hasVideo = true
-    } else {
-      remoteUser.audioTrack = user.audioTrack
-      remoteUser.hasAudio = true
-    }
+    const next: AgoraRemoteUser =
+      mediaType === 'video'
+        ? { ...base, videoTrack: user.videoTrack, hasVideo: true }
+        : { ...base, audioTrack: user.audioTrack, hasAudio: true }
+
+    remoteUsers.value = existing
+      ? remoteUsers.value.map((u) => (u.uid === user.uid ? next : u))
+      : [...remoteUsers.value, next]
   }
 
   function handleUserUnpublished(user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') {
-    const remoteUser = remoteUsers.value.find((u) => u.uid === user.uid)
-    if (!remoteUser) return
-
-    if (mediaType === 'video') {
-      remoteUser.videoTrack = undefined
-      remoteUser.hasVideo = false
-    } else {
-      remoteUser.audioTrack = undefined
-      remoteUser.hasAudio = false
-    }
+    remoteUsers.value = remoteUsers.value.map((u) => {
+      if (u.uid !== user.uid) return u
+      return mediaType === 'video'
+        ? { ...u, videoTrack: undefined, hasVideo: false }
+        : { ...u, audioTrack: undefined, hasAudio: false }
+    })
   }
 
   function handleUserLeft(user: IAgoraRTCRemoteUser) {
@@ -176,13 +176,13 @@ export function useAgoraChannel(channelId: Ref<string>) {
   function toggleMic() {
     if (!localAudioTrack.value) return
     isMuted.value = !isMuted.value
-    localAudioTrack.value.setMuted(isMuted.value)
+    void localAudioTrack.value.setEnabled(!isMuted.value)
   }
 
   function toggleCamera() {
     if (!localVideoTrack.value) return
     isVideoOff.value = !isVideoOff.value
-    localVideoTrack.value.setMuted(isVideoOff.value)
+    void localVideoTrack.value.setEnabled(!isVideoOff.value)
   }
 
   async function leave() {
@@ -202,7 +202,11 @@ export function useAgoraChannel(channelId: Ref<string>) {
       localAudioTrack.value = null
       localVideoTrack.value = null
 
-      await client.value.leave()
+      try {
+        await client.value.leave()
+      } catch {
+        // 清理阶段忽略 leave 错误，避免吞掉原始错误
+      }
       client.value = null
     }
 
@@ -213,13 +217,17 @@ export function useAgoraChannel(channelId: Ref<string>) {
     isVideoOff.value = false
   }
 
+  function handleBeforeUnload() {
+    void cleanup()
+  }
+
   onMounted(() => {
-    window.addEventListener('beforeunload', cleanup)
+    window.addEventListener('beforeunload', handleBeforeUnload)
   })
 
   onBeforeUnmount(() => {
-    window.removeEventListener('beforeunload', cleanup)
-    cleanup()
+    window.removeEventListener('beforeunload', handleBeforeUnload)
+    void cleanup()
   })
 
   return {
