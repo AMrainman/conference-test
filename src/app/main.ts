@@ -10,8 +10,8 @@ async function enableMocking() {
     return
   }
 
-  const { worker } = await import('@/mocks/browser')
-  await worker.start()
+  // const { worker } = await import('@/mocks/browser')
+  // await worker.start()
 }
 
 async function bootstrap() {
