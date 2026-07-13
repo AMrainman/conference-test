@@ -17,6 +17,14 @@ function generateDisplayName(): string {
   return `用户 ${suffix}`
 }
 
+/**
+ * 管理单个声网频道的生命周期。
+ *
+ * 职责边界：只负责客户端创建、加入/离开频道、发布/订阅轨道、基础统计。
+ * 美颜、背景模糊等视频前处理由上层通过 localVideoTrack 自行注入，
+ * 避免把媒体处理逻辑和频道管理逻辑耦合在一起。
+ */
+
 function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
   const localStats = ref<LocalStats | null>(null)
   const remoteStats = ref<Record<string, RemoteStats>>({})
@@ -241,6 +249,10 @@ export function useAgoraChannel(channelId: Ref<string>) {
       client.value.off('user-unpublished', handleUserUnpublished)
       client.value.off('user-left', handleUserLeft)
 
+      // 关闭轨道前必须先解绑视频处理链。声网 processor 与 track 实例绑定，
+      // 若直接 close 而不 unpipe，processor 仍认为已 piped 到旧 track，
+      // 下次往新 track pipe 时会报 "already piped" 错误。
+      localVideoTrack.value?.unpipe()
       localAudioTrack.value?.close()
       localVideoTrack.value?.close()
       localAudioTrack.value = null
@@ -277,6 +289,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   return {
     client,
     localAudioTrack,
+    // 把本地视频轨道暴露出去，让美颜、背景模糊等扩展 composable 自行注入 processor。
     localVideoTrack,
     localUser,
     remoteUsers,
