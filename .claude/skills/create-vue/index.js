@@ -38,7 +38,7 @@ async function main() {
   const options = parseOptionsArg()
   if (!options) {
     console.error('请通过 --options 传入插件组合，例如：')
-    console.error(`node index.js --options '{"basePlugins":["pinia"],"uiLibrary":null,"iconLibraries":[],"dxPlugins":[]}'`)
+    console.error(`node index.js --options '{"basePlugins":["pinia"],"uiLibraries":[],"iconLibraries":[],"dxPlugins":[]}'`)
     process.exit(1)
   }
 

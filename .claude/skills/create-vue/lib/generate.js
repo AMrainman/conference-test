@@ -16,7 +16,7 @@ export async function generateProject(targetDir, options) {
 
   const selected = [
     ...options.basePlugins,
-    ...(options.uiLibrary ? [options.uiLibrary] : []),
+    ...options.uiLibraries,
     ...options.iconLibraries,
     ...options.dxPlugins,
   ]
