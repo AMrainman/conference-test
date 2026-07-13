@@ -1,0 +1,19 @@
+{
+  "name": "vitest",
+  "displayName": "Vitest",
+  "category": "plugin",
+  "description": "单元测试",
+  "dependencies": {},
+  "devDependencies": {
+    "vitest": "^2.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^24.1.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "files": ["vitest.config.ts", "vitest.setup.ts"],
+  "overrides": [],
+  "postInstall": []
+}

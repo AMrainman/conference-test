@@ -1,0 +1,14 @@
+{
+  "name": "primevue",
+  "displayName": "PrimeVue",
+  "category": "ui-library",
+  "description": "PrimeVue UI 组件库",
+  "dependencies": {
+    "primevue": "^3.52.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

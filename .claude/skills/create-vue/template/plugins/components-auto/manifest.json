@@ -1,0 +1,14 @@
+{
+  "name": "components-auto",
+  "displayName": "unplugin-vue-components",
+  "category": "dx",
+  "description": "自动注册 shared 目录下的 Vue 组件",
+  "dependencies": {},
+  "devDependencies": {
+    "unplugin-vue-components": "^0.27.0"
+  },
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts", "tsconfig.json", ".gitignore"],
+  "postInstall": []
+}

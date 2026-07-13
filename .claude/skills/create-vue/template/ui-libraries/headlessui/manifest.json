@@ -1,0 +1,14 @@
+{
+  "name": "headlessui",
+  "displayName": "Headless UI",
+  "category": "ui-library",
+  "description": "无样式可访问组件",
+  "dependencies": {
+    "@headlessui/vue": "^1.7.22"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": ["src/shared/components/Modal.vue"],
+  "overrides": [],
+  "postInstall": []
+}

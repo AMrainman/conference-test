@@ -1,0 +1,16 @@
+{
+  "name": "fontawesome",
+  "displayName": "FontAwesome",
+  "category": "icon-library",
+  "description": "FontAwesome 图标库",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.0",
+    "@fortawesome/free-solid-svg-icons": "^6.5.0",
+    "@fortawesome/vue-fontawesome": "^3.0.6"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": [],
+  "postInstall": []
+}

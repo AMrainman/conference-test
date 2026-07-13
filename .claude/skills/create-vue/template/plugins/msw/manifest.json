@@ -1,0 +1,14 @@
+{
+  "name": "msw",
+  "displayName": "MSW",
+  "category": "plugin",
+  "description": "Mock Service Worker",
+  "dependencies": {
+    "msw": "^2.3.5"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": ["src/mocks"],
+  "overrides": ["src/app/main.ts"],
+  "postInstall": ["npx msw init public --save false"]
+}

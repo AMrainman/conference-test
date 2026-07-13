@@ -1,0 +1,14 @@
+{
+  "name": "auto-import",
+  "displayName": "unplugin-auto-import",
+  "category": "dx",
+  "description": "自动导入 Vue / Vue Router / Pinia API",
+  "dependencies": {},
+  "devDependencies": {
+    "unplugin-auto-import": "^0.18.0"
+  },
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts", "tsconfig.json", ".gitignore"],
+  "postInstall": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "ant-design-vue",
+  "displayName": "Ant Design Vue",
+  "category": "ui-library",
+  "description": "Ant Design Vue UI 组件库",
+  "dependencies": {
+    "ant-design-vue": "^4.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

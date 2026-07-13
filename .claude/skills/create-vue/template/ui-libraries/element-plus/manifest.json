@@ -1,0 +1,14 @@
+{
+  "name": "element-plus",
+  "displayName": "Element Plus",
+  "category": "ui-library",
+  "description": "Element Plus UI 组件库",
+  "dependencies": {
+    "element-plus": "^2.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

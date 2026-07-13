@@ -1,0 +1,14 @@
+{
+  "name": "heroicons",
+  "displayName": "Heroicons",
+  "category": "icon-library",
+  "description": "Heroicons 图标库",
+  "dependencies": {
+    "@heroicons/vue": "^2.1.5"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": [],
+  "postInstall": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "vuetify",
+  "displayName": "Vuetify",
+  "category": "ui-library",
+  "description": "Vuetify Material Design 组件库",
+  "dependencies": {
+    "vuetify": "^3.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

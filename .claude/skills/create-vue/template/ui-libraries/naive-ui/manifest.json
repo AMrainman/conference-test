@@ -1,0 +1,14 @@
+{
+  "name": "naive-ui",
+  "displayName": "Naive UI",
+  "category": "ui-library",
+  "description": "Naive UI 组件库",
+  "dependencies": {
+    "naive-ui": "^2.38.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

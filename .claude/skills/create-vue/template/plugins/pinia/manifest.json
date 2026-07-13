@@ -1,0 +1,14 @@
+{
+  "name": "pinia",
+  "displayName": "Pinia",
+  "category": "plugin",
+  "description": "Vue 状态管理",
+  "dependencies": {
+    "pinia": "^2.1.7"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": ["src/shared/stores/counterStore.ts"],
+  "overrides": ["src/app/main.ts"],
+  "postInstall": []
+}

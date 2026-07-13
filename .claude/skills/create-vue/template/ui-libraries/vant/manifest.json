@@ -1,0 +1,14 @@
+{
+  "name": "vant",
+  "displayName": "Vant",
+  "category": "ui-library",
+  "description": "Vant 移动端 UI 组件库",
+  "dependencies": {
+    "vant": "^4.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "vue-router",
+  "displayName": "Vue Router",
+  "category": "plugin",
+  "description": "Vue 路由",
+  "dependencies": {
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": ["src/app/router.ts"],
+  "overrides": ["src/app/main.ts", "src/app/App.vue"],
+  "postInstall": []
+}

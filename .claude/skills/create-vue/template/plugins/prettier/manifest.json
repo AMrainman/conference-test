@@ -1,0 +1,16 @@
+{
+  "name": "prettier",
+  "displayName": "Prettier",
+  "category": "plugin",
+  "description": "代码格式化",
+  "dependencies": {},
+  "devDependencies": {
+    "prettier": "^3.9.4"
+  },
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{ts,vue,css,json}\""
+  },
+  "files": [".prettierrc"],
+  "overrides": [],
+  "postInstall": []
+}

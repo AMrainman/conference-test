@@ -1,0 +1,14 @@
+{
+  "name": "lucide",
+  "displayName": "Lucide",
+  "category": "icon-library",
+  "description": "Lucide 图标库",
+  "dependencies": {
+    "lucide-vue-next": "^0.400.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "files": [],
+  "overrides": [],
+  "postInstall": []
+}

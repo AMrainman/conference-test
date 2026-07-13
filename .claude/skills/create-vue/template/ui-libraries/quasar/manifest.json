@@ -1,0 +1,16 @@
+{
+  "name": "quasar",
+  "displayName": "Quasar",
+  "category": "ui-library",
+  "description": "Quasar Framework",
+  "dependencies": {
+    "quasar": "^2.16.0"
+  },
+  "devDependencies": {
+    "@quasar/vite-plugin": "^1.7.0"
+  },
+  "scripts": {},
+  "files": [],
+  "overrides": ["vite.config.ts"],
+  "postInstall": []
+}
