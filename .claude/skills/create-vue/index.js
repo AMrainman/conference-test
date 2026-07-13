@@ -1,23 +1,30 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync } from 'fs'
-import { resolve } from 'path'
+import { readdirSync } from 'fs'
 import { execa } from 'execa'
-import { promptForOptions, confirmDirectoryOverwrite } from './lib/prompt.js'
 import { generateProject } from './lib/generate.js'
 
 const targetDir = process.cwd()
 const files = readdirSync(targetDir).filter(f => f !== 'README.md')
 
+function parseOptionsArg() {
+  const idx = process.argv.indexOf('--options')
+  if (idx === -1 || !process.argv[idx + 1]) return null
+  try {
+    return JSON.parse(process.argv[idx + 1])
+  } catch {
+    console.error('无法解析 --options 参数')
+    process.exit(1)
+  }
+}
+
 async function main() {
-  if (files.length > 0) {
-    const proceed = await confirmDirectoryOverwrite()
-    if (!proceed) {
-      console.log('已取消')
-      process.exit(0)
-    }
+  const options = parseOptionsArg()
+  if (!options) {
+    console.error('请通过 --options 传入插件组合，例如：')
+    console.error(`node index.js --options '{"basePlugins":["pinia"],"uiLibrary":null,"iconLibraries":[],"dxPlugins":[]}'`)
+    process.exit(1)
   }
 
-  const options = await promptForOptions()
   console.log('正在生成项目...')
   const manifests = await generateProject(targetDir, options)
 

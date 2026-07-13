@@ -7,7 +7,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@inquirer/prompts": "^7.0.0",
     "execa": "^9.0.0"
   },
   "devDependencies": {

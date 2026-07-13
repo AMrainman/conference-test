@@ -1,12 +1,12 @@
 ---
 description: "交互式生成 Vue 3 + TypeScript + Vite 项目骨架，支持按需选择插件、UI 库与图标库"
 user-invocable: true
-allowed-tools: Bash, Read, Write, Edit
+allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 ---
 
 # create-vue
 
-在当前目录交互式生成一个 Vue 3 项目骨架。支持选择基础插件、UI 库、图标库及开发体验插件，自动安装依赖并初始化配置。
+在当前目录生成一个 Vue 3 项目骨架。先由 Claude 通过 `AskUserQuestion` 一次性确认插件组合，再调用生成脚本创建文件、安装依赖并验证。
 
 ## 用法
 
@@ -14,18 +14,15 @@ allowed-tools: Bash, Read, Write, Edit
 /create-vue
 ```
 
-执行后会通过终端交互提示选择插件组合，然后在**当前目录**生成文件。
-
 ## 执行步骤
 
 1. **确认目录状态**：若当前目录非空（除 `README.md` 外），询问用户是否继续。
-2. **交互选择插件**：
-   - 必选核心：Vue 3 + TypeScript + Vite + autoprefixer + Tailwind CSS + 日间/夜间模式 + 容器自适应
-   - 基础插件（空格切换，按 `a` 全选/全不选）：Pinia、Vue Router、Storybook、MSW、ESLint、Prettier、Vitest
-   - UI 库（单选，可选"无"）：Ant Design Vue、Element Plus、Vant、Headless UI、Quasar、Vuetify、PrimeVue、Naive UI
-   - 图标库（空格切换，可多选）：FontAwesome、Heroicons、Lucide
-   - 开发体验插件（空格切换）：unplugin-auto-import、unplugin-vue-components
-3. **组合模板**：根据选择组合 `template/base` 与对应插件片段。
+2. **询问插件组合**（每类一个问题，全部选项一次展示）：
+   - 基础插件（多选）：Pinia、Vue Router、Storybook、MSW、ESLint、Prettier、Vitest
+   - UI 库（单选，含"无"）：Ant Design Vue、Element Plus、Vant、Headless UI、Quasar、Vuetify、PrimeVue、Naive UI
+   - 图标库（多选）：FontAwesome、Heroicons、Lucide
+   - 开发体验插件（多选）：unplugin-auto-import、unplugin-vue-components
+3. **生成项目**：将选项写入临时 JSON，调用 `node .claude/skills/create-vue/index.js --options <json>`。
 4. **安装依赖**：运行 `npm install`。
 5. **初始化 MSW**：若选中 MSW，运行 `npx msw init public --save false`。
 6. **验证骨架**：依次运行 `npm run type-check`、`npm run lint`、`npm run test`、`npm run build`。

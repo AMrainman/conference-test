@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { UI_LIBRARIES, ICON_LIBRARIES, DX_PLUGINS } from '../prompt.js'
+import { UI_LIBRARIES, ICON_LIBRARIES, DX_PLUGINS } from '../choices.js'
 
-describe('prompt choices', () => {
+describe('plugin choices', () => {
   it('UI_LIBRARIES includes null option', () => {
     expect(UI_LIBRARIES[0].value).toBeNull()
   })
