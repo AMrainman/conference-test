@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 
 # create-vue
 
-在当前目录生成一个 Vue 3 项目骨架。先由 Claude 通过 `AskUserQuestion` 一次性确认插件组合，再调用生成脚本创建文件、安装依赖并验证。
+在当前目录生成一个 Vue 3 项目骨架。Claude 先列出全部可选插件，由用户用自然语言或列表一次性指定，确认后调用生成脚本。
 
 ## 用法
 
@@ -16,17 +16,36 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 
 ## 执行步骤
 
-1. **确认目录状态**：若当前目录非空（除 `README.md` 外），询问用户是否继续。
-2. **询问插件组合**（每类一个问题，全部选项一次展示）：
+1. **确认目录状态**：若当前目录非空（除 `README.md` 外），使用 `AskUserQuestion` 询问是否继续。
+2. **展示全部可选插件**（一次性文本列出，不分页）：
    - 基础插件（多选）：Pinia、Vue Router、Storybook、MSW、ESLint、Prettier、Vitest
-   - UI 库（单选，含"无"）：Ant Design Vue、Element Plus、Vant、Headless UI、Quasar、Vuetify、PrimeVue、Naive UI
+   - UI 库（单选，可选"无"）：无、Ant Design Vue、Element Plus、Vant、Headless UI、Quasar、Vuetify、PrimeVue、Naive UI
    - 图标库（多选）：FontAwesome、Heroicons、Lucide
    - 开发体验插件（多选）：unplugin-auto-import、unplugin-vue-components
-3. **生成项目**：将选项写入临时 JSON，调用 `node .claude/skills/create-vue/index.js --options <json>`。
-4. **安装依赖**：运行 `npm install`。
-5. **初始化 MSW**：若选中 MSW，运行 `npx msw init public --save false`。
-6. **验证骨架**：依次运行 `npm run type-check`、`npm run lint`、`npm run test`、`npm run build`。
-7. **报告结果**：告知用户验证结果及启动方式。
+3. **收集用户选择**：请用户以自然语言或列表形式回复想要的插件，例如 "Pinia + Vue Router + Element Plus" 或 "全选"。
+4. **映射到选项**：根据用户回复，从 `lib/choices.js` 中解析出对应的 `basePlugins`、`uiLibrary`、`iconLibraries`、`dxPlugins`。
+5. **确认配置**：用 `AskUserQuestion` 展示解析结果，用户选择"确认生成"或"取消"。
+6. **生成项目**：调用 `node .claude/skills/create-vue/index.js --options '<json>'`。
+7. **安装依赖**：运行 `npm install`。
+8. **初始化 MSW**：若选中 MSW，运行 `npx msw init public --save false`。
+9. **验证骨架**：依次运行 `npm run type-check`、`npm run lint`、`npm run test`、`npm run build`。
+10. **报告结果**：告知用户验证结果及启动方式。
+
+## 选项 JSON 格式
+
+```json
+{
+  "basePlugins": ["pinia", "vue-router", "eslint", "prettier", "vitest"],
+  "uiLibrary": "element-plus",
+  "iconLibraries": ["heroicons"],
+  "dxPlugins": ["auto-import", "components-auto"]
+}
+```
+
+- `basePlugins` 为数组，可包含：`pinia`、`vue-router`、`storybook`、`msw`、`eslint`、`prettier`、`vitest`
+- `uiLibrary` 为字符串或 `null`，可选值：`null`、`ant-design-vue`、`element-plus`、`vant`、`headlessui`、`quasar`、`vuetify`、`primevue`、`naive-ui`
+- `iconLibraries` 为数组，可包含：`fontawesome`、`heroicons`、`lucide`
+- `dxPlugins` 为数组，可包含：`auto-import`、`components-auto`
 
 ## 模板结构
 
