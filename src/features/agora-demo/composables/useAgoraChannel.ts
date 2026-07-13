@@ -16,7 +16,7 @@ function generateDisplayName(): string {
   return `用户 ${suffix}`
 }
 
-function useStats(client: IAgoraRTCClient | null) {
+function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
   const localStats = ref<LocalStats | null>(null)
   const remoteStats = ref<Record<string, RemoteStats>>({})
   const networkQuality = ref<NetworkQualitySnapshot>({ uplink: 0, downlink: 0 })
@@ -24,9 +24,10 @@ function useStats(client: IAgoraRTCClient | null) {
   let timer: ReturnType<typeof setInterval> | null = null
 
   function start() {
-    if (!client || timer) return
+    if (timer) return
 
     timer = setInterval(() => {
+      const client = clientRef.value
       if (!client) return
 
       const localAudio = client.getLocalAudioStats()
@@ -97,7 +98,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   const error = ref<string | null>(null)
   const isJoining = ref(false)
 
-  const { localStats, remoteStats, networkQuality, start: startStats, stop: stopStats } = useStats(client.value)
+  const { localStats, remoteStats, networkQuality, start: startStats, stop: stopStats } = useStats(client)
 
   async function join() {
     if (isJoining.value || joined.value) return
@@ -108,6 +109,10 @@ export function useAgoraChannel(channelId: Ref<string>) {
       const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
       client.value = agoraClient
 
+      agoraClient.on('user-published', handleUserPublished)
+      agoraClient.on('user-unpublished', handleUserUnpublished)
+      agoraClient.on('user-left', handleUserLeft)
+
       const uid = await agoraClient.join(AGORA_APP_ID, channelId.value, AGORA_TOKEN, null)
       localUser.value = { uid, displayName: generateDisplayName() }
 
@@ -117,10 +122,6 @@ export function useAgoraChannel(channelId: Ref<string>) {
 
       await agoraClient.publish([audioTrack, videoTrack])
       joined.value = true
-
-      agoraClient.on('user-published', handleUserPublished)
-      agoraClient.on('user-unpublished', handleUserUnpublished)
-      agoraClient.on('user-left', handleUserLeft)
 
       startStats()
     } catch (err) {
