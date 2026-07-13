@@ -58,10 +58,7 @@ function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
       }
 
       const nextRemoteStats: Record<string, RemoteStats> = {}
-      const allUids = new Set([
-        ...Object.keys(remoteAudio),
-        ...Object.keys(remoteVideo),
-      ])
+      const allUids = new Set([...Object.keys(remoteAudio), ...Object.keys(remoteVideo)])
       for (const uid of allUids) {
         const audio = remoteAudio[uid]
         const video = remoteVideo[uid]
@@ -103,16 +100,18 @@ export function useAgoraChannel(channelId: Ref<string>) {
   const joined = ref(false)
   const error = ref<string | null>(null)
   const isJoining = ref(false)
+  const disposed = ref(false)
 
   const { localStats, remoteStats, networkQuality, start: startStats, stop: stopStats } = useStats(client)
 
   async function join() {
-    if (isJoining.value || joined.value) return
+    if (isJoining.value || joined.value || disposed.value) return
     isJoining.value = true
     error.value = null
 
     try {
       const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
+      if (disposed.value) return
       client.value = agoraClient
 
       agoraClient.on('user-published', handleUserPublished)
@@ -120,13 +119,27 @@ export function useAgoraChannel(channelId: Ref<string>) {
       agoraClient.on('user-left', handleUserLeft)
 
       const uid = await agoraClient.join(AGORA_APP_ID, channelId.value, AGORA_TOKEN, null)
+      if (disposed.value) {
+        await cleanup()
+        return
+      }
       localUser.value = { uid, displayName: generateDisplayName() }
 
       const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks()
+      if (disposed.value) {
+        audioTrack.close()
+        videoTrack.close()
+        await cleanup()
+        return
+      }
       localAudioTrack.value = audioTrack
       localVideoTrack.value = videoTrack
 
       await agoraClient.publish([audioTrack, videoTrack])
+      if (disposed.value) {
+        await cleanup()
+        return
+      }
       joined.value = true
 
       startStats()
@@ -140,9 +153,14 @@ export function useAgoraChannel(channelId: Ref<string>) {
 
   async function handleUserPublished(user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') {
     if (!client.value) return
-    await client.value.subscribe(user, mediaType)
+    try {
+      await client.value.subscribe(user, mediaType)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : `订阅远端${mediaType === 'video' ? '视频' : '音频'}失败`
+      return
+    }
 
-    const existing = remoteUsers.value.find((u) => u.uid === user.uid)
+    const existing = remoteUsers.value.find(u => u.uid === user.uid)
     const base: AgoraRemoteUser = existing ?? {
       uid: user.uid,
       displayName: `用户 ${String(user.uid).slice(-4)}`,
@@ -156,12 +174,13 @@ export function useAgoraChannel(channelId: Ref<string>) {
         : { ...base, audioTrack: user.audioTrack, hasAudio: true }
 
     remoteUsers.value = existing
-      ? remoteUsers.value.map((u) => (u.uid === user.uid ? next : u))
+      ? remoteUsers.value.map(u => (u.uid === user.uid ? next : u))
       : [...remoteUsers.value, next]
   }
 
   function handleUserUnpublished(user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') {
-    remoteUsers.value = remoteUsers.value.map((u) => {
+    client.value?.unsubscribe(user, mediaType).catch(() => {})
+    remoteUsers.value = remoteUsers.value.map(u => {
       if (u.uid !== user.uid) return u
       return mediaType === 'video'
         ? { ...u, videoTrack: undefined, hasVideo: false }
@@ -170,19 +189,29 @@ export function useAgoraChannel(channelId: Ref<string>) {
   }
 
   function handleUserLeft(user: IAgoraRTCRemoteUser) {
-    remoteUsers.value = remoteUsers.value.filter((u) => u.uid !== user.uid)
+    remoteUsers.value = remoteUsers.value.filter(u => u.uid !== user.uid)
   }
 
-  function toggleMic() {
+  async function toggleMic() {
     if (!localAudioTrack.value) return
-    isMuted.value = !isMuted.value
-    void localAudioTrack.value.setEnabled(!isMuted.value)
+    const next = !isMuted.value
+    try {
+      await localAudioTrack.value.setEnabled(!next)
+      isMuted.value = next
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '切换麦克风失败'
+    }
   }
 
-  function toggleCamera() {
+  async function toggleCamera() {
     if (!localVideoTrack.value) return
-    isVideoOff.value = !isVideoOff.value
-    void localVideoTrack.value.setEnabled(!isVideoOff.value)
+    const next = !isVideoOff.value
+    try {
+      await localVideoTrack.value.setEnabled(!next)
+      isVideoOff.value = next
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '切换摄像头失败'
+    }
   }
 
   async function leave() {
@@ -190,6 +219,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   }
 
   async function cleanup() {
+    disposed.value = true
     stopStats()
 
     if (client.value) {
