@@ -125,7 +125,12 @@ export function useAgoraChannel(channelId: Ref<string>) {
       agoraClient.on('user-unpublished', handleUserUnpublished)
       agoraClient.on('user-left', handleUserLeft)
 
-      const uid = await agoraClient.join(AGORA_APP_ID, channelId.value, AGORA_TOKEN, null)
+      const uid = await agoraClient.join(
+        AGORA_APP_ID,
+        channelId.value,
+        AGORA_TOKEN,
+        Math.floor(Math.random() * 1000000)
+      )
       if (disposed.value) {
         await cleanup()
         return
