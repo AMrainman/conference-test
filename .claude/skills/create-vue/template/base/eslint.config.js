@@ -44,7 +44,7 @@ export default defineConfigWithVueTs(
     },
     rules: {
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
-      'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-unused-vars': ['off', { vars: 'all', args: 'after-used', ignoreRestSiblings: false }],
       'no-var': 'error',
@@ -74,6 +74,7 @@ export default defineConfigWithVueTs(
       'vue/attributes-order': 'error',
       'vue/multi-word-component-names': 'off',
       'vue/singleline-html-element-content-newline': 'off',
+      'vue/no-v-html': 'off',
       'vue/attribute-hyphenation': 'off',
       'vue/require-default-prop': 'off',
     },

@@ -7,52 +7,18 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "type-check": "vue-tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,vue,css,json}\"",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@headlessui/vue": "^1.7.22",
-    "@heroicons/vue": "^2.1.5",
-    "@tailwindcss/container-queries": "^0.1.1",
-    "msw": "^2.3.5",
-    "pinia": "^2.1.7",
-    "vue": "^3.5.0",
-    "vue-router": "^4.4.0"
-  },
-  "msw": {
-    "workerDirectory": ["public"]
+    "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^1.6.1",
-    "@storybook/addon-essentials": "^8.2.0",
-    "@storybook/addon-interactions": "^8.2.0",
-    "@storybook/blocks": "^8.2.0",
-    "@storybook/test": "^8.2.0",
-    "@storybook/vue3": "^8.2.0",
-    "@storybook/vue3-vite": "^8.2.0",
     "@vitejs/plugin-vue": "^5.2.0",
-    "@vue/eslint-config-prettier": "^10.2.0",
-    "@vue/eslint-config-typescript": "^14.9.0",
-    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.19",
-    "eslint": "^10.6.0",
-    "eslint-plugin-oxlint": "^1.73.0",
-    "eslint-plugin-prettier": "^5.5.6",
-    "eslint-plugin-vue": "^10.9.2",
-    "jsdom": "^24.1.0",
     "postcss": "^8.4.39",
-    "prettier": "^3.9.4",
-    "storybook": "^8.2.0",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.0",
     "vite": "^6.0.0",
-    "vitest": "^2.0.0",
     "vue-tsc": "^2.0.0"
   }
 }

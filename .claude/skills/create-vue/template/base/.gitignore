@@ -8,3 +8,7 @@ storybook-static
 .env
 .env.*
 !.env.example
+
+# 自动生成声明
+src/auto-imports.d.ts
+src/components.d.ts

@@ -28,6 +28,18 @@ export default {
           subtle: 'rgb(var(--color-primary-subtle) / <alpha-value>)',
           text: 'rgb(var(--color-primary-text) / <alpha-value>)',
         },
+        success: {
+          DEFAULT: 'rgb(var(--color-success) / <alpha-value>)',
+          hover: 'rgb(var(--color-success-hover) / <alpha-value>)',
+          subtle: 'rgb(var(--color-success-subtle) / <alpha-value>)',
+          text: 'rgb(var(--color-success-text) / <alpha-value>)',
+        },
+        warning: {
+          DEFAULT: 'rgb(var(--color-warning) / <alpha-value>)',
+          hover: 'rgb(var(--color-warning-hover) / <alpha-value>)',
+          subtle: 'rgb(var(--color-warning-subtle) / <alpha-value>)',
+          text: 'rgb(var(--color-warning-text) / <alpha-value>)',
+        },
         danger: {
           DEFAULT: 'rgb(var(--color-danger) / <alpha-value>)',
           hover: 'rgb(var(--color-danger-hover) / <alpha-value>)',
