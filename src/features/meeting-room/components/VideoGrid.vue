@@ -42,6 +42,7 @@ withDefaults(defineProps<Props>(), {
         :is-muted="!user.hasAudio"
         :is-video-off="!user.hasVideo"
         :video-track="user.videoTrack"
+        :audio-track="user.audioTrack"
       >
         <slot name="remoteTile" :user="user" />
       </VideoTile>

@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { MicrophoneIcon } from '@heroicons/vue/24/solid'
 
-import type { ILocalVideoTrack, IRemoteVideoTrack } from 'agora-rtc-sdk-ng'
+import type { ILocalVideoTrack, IRemoteAudioTrack, IRemoteVideoTrack } from 'agora-rtc-sdk-ng'
 import Avatar from './Avatar.vue'
 import MicrophoneSlashIcon from './MicrophoneSlashIcon.vue'
 
@@ -13,6 +13,7 @@ interface Props {
   isVideoOff?: boolean
   isSpeaking?: boolean
   videoTrack?: ILocalVideoTrack | IRemoteVideoTrack
+  audioTrack?: IRemoteAudioTrack
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,31 +23,57 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const videoRef = ref<HTMLVideoElement | null>(null)
-const currentTrack = ref<ILocalVideoTrack | IRemoteVideoTrack | null>(null)
+const currentVideoTrack = ref<ILocalVideoTrack | IRemoteVideoTrack | null>(null)
+const currentAudioTrack = ref<IRemoteAudioTrack | null>(null)
 
 const showAvatar = computed(() => props.isVideoOff || !props.videoTrack)
 
-function playTrack(track: ILocalVideoTrack | IRemoteVideoTrack | undefined) {
+function playVideoTrack(track: ILocalVideoTrack | IRemoteVideoTrack | undefined) {
   const el = videoRef.value
   if (!el || !track || props.isVideoOff) {
-    currentTrack.value?.stop()
-    currentTrack.value = null
+    currentVideoTrack.value?.stop()
+    currentVideoTrack.value = null
     return
   }
-  currentTrack.value?.stop()
-  currentTrack.value = track
-  track.play(el)
+  currentVideoTrack.value?.stop()
+  currentVideoTrack.value = track
+  try {
+    track.play(el)
+  } catch (err) {
+    console.error('播放视频轨道失败', err)
+  }
 }
 
-onMounted(() => playTrack(props.videoTrack))
+function playAudioTrack(track: IRemoteAudioTrack | undefined) {
+  currentAudioTrack.value?.stop()
+  currentAudioTrack.value = null
+  if (!track) return
+  currentAudioTrack.value = track
+  try {
+    track.play()
+  } catch (err) {
+    console.error('播放音频轨道失败', err)
+  }
+}
+
+onMounted(() => {
+  playVideoTrack(props.videoTrack)
+  playAudioTrack(props.audioTrack)
+})
 onBeforeUnmount(() => {
-  currentTrack.value?.stop()
-  currentTrack.value = null
+  currentVideoTrack.value?.stop()
+  currentVideoTrack.value = null
+  currentAudioTrack.value?.stop()
+  currentAudioTrack.value = null
 })
 
 watch(
   () => props.videoTrack,
-  track => playTrack(track)
+  track => playVideoTrack(track)
+)
+watch(
+  () => props.audioTrack,
+  track => playAudioTrack(track)
 )
 </script>
 
