@@ -28,6 +28,10 @@ export const router = createRouter({
       component: () => import('@/features/meeting-ended/views/MeetingEndedView.vue'),
     },
     {
+      path: '/demo/:channelId',
+      component: () => import('@/features/agora-demo/views/AgoraDemoView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('@/features/home/views/NotFoundView.vue'),
     },
