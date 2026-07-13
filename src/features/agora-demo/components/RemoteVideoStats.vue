@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatBitrate } from '../utils/formatBitrate'
 import type { RemoteStats } from '../types'
 
 interface Props {
@@ -6,12 +7,6 @@ interface Props {
 }
 
 defineProps<Props>()
-
-function formatBitrate(bps: number): string {
-  if (bps < 1000) return `${bps}bps`
-  if (bps < 1000 * 1000) return `${(bps / 1000).toFixed(1)}Kbps`
-  return `${(bps / 1000 / 1000).toFixed(2)}Mbps`
-}
 </script>
 
 <template>
@@ -20,7 +15,7 @@ function formatBitrate(bps: number): string {
     class="absolute bottom-2 right-2 rounded bg-overlay/70 px-2 py-1 text-[10px] leading-tight text-text"
   >
     <div>下行 {{ formatBitrate(stats.videoReceiveBitrate + stats.audioReceiveBitrate) }}</div>
-    <div v-if="stats.videoReceiveResolutionWidth">
+    <div v-if="stats.videoReceiveResolutionWidth && stats.videoReceiveFrameRate != null">
       {{ stats.videoReceiveResolutionWidth }}x{{ stats.videoReceiveResolutionHeight }} @
       {{ stats.videoReceiveFrameRate }}fps
     </div>

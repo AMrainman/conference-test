@@ -28,14 +28,21 @@ const showAvatar = computed(() => props.isVideoOff || !props.videoTrack)
 
 function playTrack(track: ILocalVideoTrack | IRemoteVideoTrack | undefined) {
   const el = videoRef.value
-  if (!el || !track || props.isVideoOff) return
+  if (!el || !track || props.isVideoOff) {
+    currentTrack.value?.stop()
+    currentTrack.value = null
+    return
+  }
   currentTrack.value?.stop()
   currentTrack.value = track
   track.play(el)
 }
 
 onMounted(() => playTrack(props.videoTrack))
-onBeforeUnmount(() => currentTrack.value?.stop())
+onBeforeUnmount(() => {
+  currentTrack.value?.stop()
+  currentTrack.value = null
+})
 
 watch(
   () => props.videoTrack,

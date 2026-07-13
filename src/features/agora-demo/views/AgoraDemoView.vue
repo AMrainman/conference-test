@@ -6,6 +6,8 @@ import MeetingHeader from '@/shared/components/MeetingHeader.vue'
 import MeetingToolbar from '@/features/meeting-room/components/MeetingToolbar.vue'
 import VideoGrid from '@/features/meeting-room/components/VideoGrid.vue'
 import { useAgoraChannel } from '../composables/useAgoraChannel'
+import RemoteVideoStats from '../components/RemoteVideoStats.vue'
+import { formatBitrate } from '../utils/formatBitrate'
 
 const route = useRoute()
 const router = useRouter()
@@ -70,12 +72,6 @@ function qualityColor(level: number): string {
   return 'bg-danger'
 }
 
-function formatBitrate(bps: number): string {
-  if (bps < 1000) return `${bps}bps`
-  if (bps < 1000 * 1000) return `${(bps / 1000).toFixed(1)}Kbps`
-  return `${(bps / 1000 / 1000).toFixed(2)}Mbps`
-}
-
 async function copyStats() {
   const payload = {
     channelId: channelId.value,
@@ -125,11 +121,14 @@ async function copyStats() {
         :local-user="localUser ?? undefined"
         :local-video-track="localVideoTrack ?? undefined"
         :remote-users="remoteUsers"
-        :remote-stats="remoteStats"
         :is-local-video-off="isVideoOff"
         :is-local-muted="isMuted"
         class="flex-1"
-      />
+      >
+        <template #remoteTile="{ user }">
+          <RemoteVideoStats :stats="remoteStats[String(user.uid)]" />
+        </template>
+      </VideoGrid>
 
       <div
         v-if="localStats"

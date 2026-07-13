@@ -2,13 +2,11 @@
 import type { ICameraVideoTrack } from 'agora-rtc-sdk-ng'
 import VideoTile from '@/shared/components/VideoTile.vue'
 import type { Participant } from '@/shared/types'
-import type { AgoraRemoteUser, RemoteStats } from '@/features/agora-demo/types'
-import RemoteVideoStats from '@/features/agora-demo/components/RemoteVideoStats.vue'
+import type { AgoraRemoteUser } from '@/features/agora-demo/types'
 
 interface Props {
   participants?: Participant[]
   remoteUsers?: AgoraRemoteUser[]
-  remoteStats?: Record<string, RemoteStats>
   localVideoTrack?: ICameraVideoTrack
   localUser?: { uid: string | number; displayName: string }
   isLocalVideoOff?: boolean
@@ -18,7 +16,6 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   participants: () => [],
   remoteUsers: () => [],
-  remoteStats: () => ({}),
   isLocalVideoOff: false,
   isLocalMuted: false,
 })
@@ -46,10 +43,10 @@ withDefaults(defineProps<Props>(), {
         :is-video-off="!user.hasVideo"
         :video-track="user.videoTrack"
       >
-        <RemoteVideoStats :stats="remoteStats[String(user.uid)]" />
+        <slot name="remoteTile" :user="user" />
       </VideoTile>
 
-      <!-- 原有 participants 回退（兼容旧用法）-->
+      <!-- 原有 participants 回退（兼容旧用法） -->
       <VideoTile
         v-for="participant in participants"
         :key="participant.id"

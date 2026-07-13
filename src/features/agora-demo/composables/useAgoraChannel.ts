@@ -115,8 +115,11 @@ export function useAgoraChannel(channelId: Ref<string>) {
 
     try {
       const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
-      if (disposed.value) return
       client.value = agoraClient
+      if (disposed.value) {
+        await cleanup()
+        return
+      }
 
       agoraClient.on('user-published', handleUserPublished)
       agoraClient.on('user-unpublished', handleUserUnpublished)
@@ -219,7 +222,7 @@ export function useAgoraChannel(channelId: Ref<string>) {
   }
 
   async function leave() {
-    await cleanup(true)
+    await cleanup(false)
   }
 
   async function cleanup(disposing = false) {
