@@ -15,9 +15,11 @@ export interface AgoraRemoteUser {
 }
 
 export interface LocalStats {
+  audioSendBitrate: number
   audioSendBytes: number
   audioSendPackets: number
   audioSendPacketsLost: number
+  videoSendBitrate: number
   videoSendBytes: number
   videoSendPackets: number
   videoSendPacketsLost: number
@@ -28,9 +30,11 @@ export interface LocalStats {
 
 export interface RemoteStats {
   uid: UID
+  audioReceiveBitrate: number
   audioReceiveBytes: number
   audioReceivePackets: number
   audioReceivePacketsLost: number
+  videoReceiveBitrate: number
   videoReceiveBytes: number
   videoReceivePackets: number
   videoReceivePacketsLost: number

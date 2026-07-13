@@ -41,9 +41,11 @@ function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
       const videoTrackStats = Object.values(localVideo)[0]
 
       localStats.value = {
+        audioSendBitrate: audioTrackStats?.sendBitrate ?? 0,
         audioSendBytes: audioTrackStats?.sendBytes ?? 0,
         audioSendPackets: audioTrackStats?.sendPackets ?? 0,
         audioSendPacketsLost: audioTrackStats?.sendPacketsLost ?? 0,
+        videoSendBitrate: videoTrackStats?.sendBitrate ?? 0,
         videoSendBytes: videoTrackStats?.sendBytes ?? 0,
         videoSendPackets: videoTrackStats?.sendPackets ?? 0,
         videoSendPacketsLost: videoTrackStats?.sendPacketsLost ?? 0,
@@ -64,9 +66,11 @@ function useStats(clientRef: Ref<IAgoraRTCClient | null>) {
         const video = remoteVideo[uid]
         nextRemoteStats[uid] = {
           uid,
+          audioReceiveBitrate: audio?.receiveBitrate ?? 0,
           audioReceiveBytes: audio?.receiveBytes ?? 0,
           audioReceivePackets: audio?.receivePackets ?? 0,
           audioReceivePacketsLost: audio?.receivePacketsLost ?? 0,
+          videoReceiveBitrate: video?.receiveBitrate ?? 0,
           videoReceiveBytes: video?.receiveBytes ?? 0,
           videoReceivePackets: video?.receivePackets ?? 0,
           videoReceivePacketsLost: video?.receivePacketsLost ?? 0,

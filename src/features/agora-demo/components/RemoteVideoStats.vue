@@ -7,11 +7,10 @@ interface Props {
 
 defineProps<Props>()
 
-function formatBitrate(bytes: number): string {
-  const bits = bytes * 8
-  if (bits < 1024) return `${bits}bps`
-  if (bits < 1024 * 1024) return `${(bits / 1024).toFixed(1)}Kbps`
-  return `${(bits / 1024 / 1024).toFixed(2)}Mbps`
+function formatBitrate(bps: number): string {
+  if (bps < 1000) return `${bps}bps`
+  if (bps < 1000 * 1000) return `${(bps / 1000).toFixed(1)}Kbps`
+  return `${(bps / 1000 / 1000).toFixed(2)}Mbps`
 }
 </script>
 
@@ -20,7 +19,7 @@ function formatBitrate(bytes: number): string {
     v-if="stats"
     class="absolute bottom-2 right-2 rounded bg-overlay/70 px-2 py-1 text-[10px] leading-tight text-text"
   >
-    <div>下行 {{ formatBitrate(stats.videoReceiveBytes + stats.audioReceiveBytes) }}</div>
+    <div>下行 {{ formatBitrate(stats.videoReceiveBitrate + stats.audioReceiveBitrate) }}</div>
     <div v-if="stats.videoReceiveResolutionWidth">
       {{ stats.videoReceiveResolutionWidth }}x{{ stats.videoReceiveResolutionHeight }} @
       {{ stats.videoReceiveFrameRate }}fps

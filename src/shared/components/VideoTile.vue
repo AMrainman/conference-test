@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { MicrophoneIcon } from '@heroicons/vue/24/solid'
 
 import type { ILocalVideoTrack, IRemoteVideoTrack } from 'agora-rtc-sdk-ng'
@@ -22,18 +22,25 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const videoRef = ref<HTMLVideoElement | null>(null)
+const currentTrack = ref<ILocalVideoTrack | IRemoteVideoTrack | null>(null)
 
 const showAvatar = computed(() => props.isVideoOff || !props.videoTrack)
 
-function playTrack() {
+function playTrack(track: ILocalVideoTrack | IRemoteVideoTrack | undefined) {
   const el = videoRef.value
-  const track = props.videoTrack
   if (!el || !track || props.isVideoOff) return
+  currentTrack.value?.stop()
+  currentTrack.value = track
   track.play(el)
 }
 
-onMounted(playTrack)
-onUpdated(playTrack)
+onMounted(() => playTrack(props.videoTrack))
+onBeforeUnmount(() => currentTrack.value?.stop())
+
+watch(
+  () => props.videoTrack,
+  track => playTrack(track)
+)
 </script>
 
 <template>

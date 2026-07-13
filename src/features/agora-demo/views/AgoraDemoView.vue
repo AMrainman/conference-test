@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import MeetingHeader from '@/shared/components/MeetingHeader.vue'
@@ -39,6 +39,17 @@ onMounted(() => {
   }
 })
 
+watch(
+  channelId,
+  async (newId, oldId) => {
+    if (newId && newId !== oldId) {
+      await leave()
+      await join()
+    }
+  },
+  { flush: 'post' }
+)
+
 async function handleLeave() {
   await leave()
   await router.replace('/')
@@ -55,14 +66,14 @@ function qualityText(level: number): string {
 function qualityColor(level: number): string {
   if (level <= 1) return 'bg-success'
   if (level <= 2) return 'bg-warning'
+  if (level <= 3) return 'bg-warning'
   return 'bg-danger'
 }
 
-function formatBitrate(bytes: number): string {
-  const bits = bytes * 8
-  if (bits < 1024) return `${bits}bps`
-  if (bits < 1024 * 1024) return `${(bits / 1024).toFixed(1)}Kbps`
-  return `${(bits / 1024 / 1024).toFixed(2)}Mbps`
+function formatBitrate(bps: number): string {
+  if (bps < 1000) return `${bps}bps`
+  if (bps < 1000 * 1000) return `${(bps / 1000).toFixed(1)}Kbps`
+  return `${(bps / 1000 / 1000).toFixed(2)}Mbps`
 }
 
 async function copyStats() {
@@ -95,7 +106,7 @@ async function copyStats() {
       <div class="flex items-center gap-2 text-sm text-text-secondary">
         <span class="inline-block h-2.5 w-2.5 rounded-full" :class="qualityColor(networkQuality.uplink)" />
         <span>上行 {{ qualityText(networkQuality.uplink) }}</span>
-        <span class="text-text-tertiary">|</span>
+        <span class="text-text-muted">|</span>
         <span>下行 {{ qualityText(networkQuality.downlink) }}</span>
       </div>
     </MeetingHeader>
@@ -124,8 +135,8 @@ async function copyStats() {
         v-if="localStats"
         class="flex items-center justify-center gap-4 bg-surface px-4 py-1 text-xs text-text-secondary"
       >
-        <span>上行视频 {{ formatBitrate(localStats.videoSendBytes) }}</span>
-        <span>上行音频 {{ formatBitrate(localStats.audioSendBytes) }}</span>
+        <span>上行视频 {{ formatBitrate(localStats.videoSendBitrate) }}</span>
+        <span>上行音频 {{ formatBitrate(localStats.audioSendBitrate) }}</span>
         <span v-if="localStats.videoSendFrameRate">{{ localStats.videoSendFrameRate }}fps</span>
         <span v-if="localStats.videoSendResolutionWidth">
           {{ localStats.videoSendResolutionWidth }}x{{ localStats.videoSendResolutionHeight }}
