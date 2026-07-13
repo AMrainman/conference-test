@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue'
-import { RouterView } from 'vue-router'
 import AppShell from '@/shared/components/AppShell.vue'
+import HomeView from '@/features/home/views/HomeView.vue'
 
 const capturedError = ref<Error | null>(null)
 
@@ -31,6 +31,6 @@ function reload() {
         重新加载
       </button>
     </div>
-    <RouterView v-else />
+    <HomeView v-else />
   </AppShell>
 </template>

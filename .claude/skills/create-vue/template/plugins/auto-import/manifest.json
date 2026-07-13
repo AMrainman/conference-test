@@ -9,6 +9,6 @@
   },
   "scripts": {},
   "files": [],
-  "overrides": ["vite.config.ts", "tsconfig.json", ".gitignore"],
+  "overrides": ["tsconfig.json", ".gitignore"],
   "postInstall": []
 }

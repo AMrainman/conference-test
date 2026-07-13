@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {},
-  "files": ["src/shared/stores/counterStore.ts"],
-  "overrides": ["src/app/main.ts"],
+  "files": ["src/shared/stores/counterStore.ts", "src/shared/stores/themeStore.ts", "src/shared/composables/useTheme.ts"],
+  "overrides": ["src/app/main.ts", "src/shared/components/__tests__/ThemeToggle.spec.ts"],
   "postInstall": []
 }

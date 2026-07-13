@@ -5,7 +5,7 @@ import AppShell from '@/shared/components/AppShell.vue'
 
 const capturedError = ref<Error | null>(null)
 
-onErrorCaptured((err) => {
+onErrorCaptured(err => {
   capturedError.value = err instanceof Error ? err : new Error(String(err))
   return false
 })

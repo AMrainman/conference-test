@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import ThemeToggle from '@/shared/components/ThemeToggle.vue'
-import Button from '@/shared/components/Button.vue'
-
-const router = useRouter()
-
-function goToAbout() {
-  router.push('/about')
-}
 </script>
 
 <template>
@@ -19,7 +11,6 @@ function goToAbout() {
 
     <main class="flex flex-col gap-8">
       <p class="text-text-secondary">欢迎来到 Vue 项目骨架。</p>
-      <Button @click="goToAbout">关于</Button>
     </main>
   </div>
 </template>

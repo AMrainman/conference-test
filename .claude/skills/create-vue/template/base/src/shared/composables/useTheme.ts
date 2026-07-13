@@ -1,13 +1,12 @@
 import { computed } from 'vue'
-import { useThemeStore } from '@/shared/stores/themeStore'
+import { theme, resolvedTheme, setTheme, toggleTheme, initTheme } from '@/shared/stores/themeStore'
 
 export function useTheme() {
-  const store = useThemeStore()
   return {
-    theme: computed(() => store.theme),
-    resolvedTheme: computed(() => store.resolvedTheme),
-    setTheme: store.setTheme,
-    toggleTheme: store.toggleTheme,
-    initTheme: store.initTheme,
+    theme: computed(() => theme.value),
+    resolvedTheme: computed(() => resolvedTheme.value),
+    setTheme,
+    toggleTheme,
+    initTheme,
   }
 }

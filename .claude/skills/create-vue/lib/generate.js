@@ -1,7 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs'
 import { dirname, join, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { mergePackageJsonContent, mergeViteConfig } from './merge-config.js'
+import { mergePackageJsonContent } from './merge-config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -36,14 +36,15 @@ export async function generateProject(targetDir, options) {
     copyManifestFiles(manifest, targetDir)
   }
 
-  // 3. 生成 main.ts 和 App.vue（处理多插件组合）
+  // 3. 生成 main.ts、vite.config.ts 和 vitest.setup.ts
   generateMainEntry(targetDir, options)
-  generateAppComponent(targetDir, options)
+  generateViteConfig(targetDir, options)
+  generateVitestSetup(targetDir, options)
 
-  // 4. 应用 overrides（除 main.ts / App.vue 外）
+  // 4. 应用 overrides（除 main.ts / vite.config.ts / vitest.setup.ts 外）
   for (const manifest of manifests) {
     for (const override of manifest.overrides || []) {
-      if (override === 'src/app/main.ts' || override === 'src/app/App.vue') continue
+      if (override === 'src/app/main.ts' || override === 'vite.config.ts' || override === 'vitest.setup.ts') continue
       applyOverride(manifest, override, targetDir)
     }
   }
@@ -138,50 +139,57 @@ ${hasPinia ? 'app.use(createPinia())\n' : ''}${hasRouter ? 'app.use(router)\n' :
   writeFileSync(join(targetDir, 'src/app/main.ts'), imports.join('\n') + body)
 }
 
-function generateAppComponent(targetDir, options) {
-  const hasRouter = options.basePlugins.includes('vue-router')
+function generateViteConfig(targetDir, options) {
+  const hasAutoImport = options.dxPlugins.includes('auto-import')
+  const hasComponents = options.dxPlugins.includes('components-auto')
 
-  if (!hasRouter) {
-    // base 已经包含合适的 App.vue，但这里显式生成无路由版本
-    const content = `<script setup lang="ts">
-import { onErrorCaptured, ref } from 'vue'
-import AppShell from '@/shared/components/AppShell.vue'
-import HomeView from '@/features/home/views/HomeView.vue'
+  const imports = [
+    "import { defineConfig } from 'vite'",
+    "import vue from '@vitejs/plugin-vue'",
+    "import { resolve } from 'path'",
+  ]
+  const plugins = ['vue()']
 
-const capturedError = ref<Error | null>(null)
-
-onErrorCaptured((err) => {
-  capturedError.value = err instanceof Error ? err : new Error(String(err))
-  return false
-})
-
-function reload() {
-  window.location.reload()
-}
-</script>
-
-<template>
-  <AppShell>
-    <div v-if="capturedError" class="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <div class="rounded-lg bg-danger-subtle px-6 py-4 text-danger-text">
-        <p class="font-semibold">应用发生错误</p>
-        <p class="mt-1 text-sm">{{ capturedError.message }}</p>
-      </div>
-      <button
-        type="button"
-        class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-text hover:bg-primary-hover"
-        @click="reload"
-      >
-        重新加载
-      </button>
-    </div>
-    <HomeView v-else />
-  </AppShell>
-</template>
-`
-    writeFileSync(join(targetDir, 'src/app/App.vue'), content)
-    return
+  if (hasAutoImport) {
+    imports.push("import AutoImport from 'unplugin-auto-import/vite'")
+    plugins.push(`AutoImport({\n      imports: ['vue', 'vue-router', 'pinia'],\n      dts: 'src/auto-imports.d.ts',\n      dirs: ['src/shared/composables', 'src/shared/stores'],\n      vueTemplate: true,\n      eslintrc: {\n        enabled: true,\n      },\n    })`)
   }
 
-  // 有路由版本由 vue-router 片段 files 提供，无需生成
+  if (hasComponents) {
+    imports.push("import Components from 'unplugin-vue-components/vite'")
+    plugins.push(`Components({\n      dirs: ['src/shared/components'],\n      dts: 'src/components.d.ts',\n      deep: true,\n    })`)
+  }
+
+  const content = `${imports.join('\n')}\n\nexport default defineConfig({\n  plugins: [\n    ${plugins.join(',\n    ')},\n  ],\n  resolve: {\n    alias: {\n      '@': resolve(__dirname, 'src'),\n    },\n  },\n})\n`
+
+  writeFileSync(join(targetDir, 'vite.config.ts'), content)
+}
+
+function generateVitestSetup(targetDir, options) {
+  const hasVitest = options.basePlugins.includes('vitest')
+  if (!hasVitest) return
+
+  const hasMsw = options.basePlugins.includes('msw')
+
+  let content = ''
+  if (hasMsw) {
+    content = `import { setupServer } from 'msw/node'
+import { beforeAll, afterAll, afterEach } from 'vitest'
+import { handlers } from './src/mocks/handlers'
+
+const server = setupServer(...handlers)
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+`
+  } else {
+    content = `import { expect } from 'vitest'
+
+// 占位 setup，可根据需要扩展自定义 matchers
+expect.extend({})
+`
+  }
+
+  writeFileSync(join(targetDir, 'vitest.setup.ts'), content)
 }
