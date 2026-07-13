@@ -1,10 +1,27 @@
 #!/usr/bin/env node
 import { readdirSync } from 'fs'
-import { execa } from 'execa'
+import { spawn } from 'child_process'
 import { generateProject } from './lib/generate.js'
 
 const targetDir = process.cwd()
 const files = readdirSync(targetDir).filter(f => f !== 'README.md')
+
+function run(command, args = []) {
+  return new Promise((resolve, reject) => {
+    const isWin = process.platform === 'win32'
+    const child = isWin
+      ? spawn(`${command} ${args.join(' ')}`, [], { stdio: 'inherit', shell: true })
+      : spawn(command, args, { stdio: 'inherit' })
+    child.on('close', code => {
+      if (code === 0) {
+        resolve()
+      } else {
+        reject(new Error(`命令退出码 ${code}: ${command} ${args.join(' ')}`))
+      }
+    })
+    child.on('error', reject)
+  })
+}
 
 function parseOptionsArg() {
   const idx = process.argv.indexOf('--options')
@@ -29,21 +46,21 @@ async function main() {
   const manifests = await generateProject(targetDir, options)
 
   console.log('正在安装依赖...')
-  await execa('npm', ['install'], { stdio: 'inherit' })
+  await run('npm', ['install'])
 
   for (const manifest of manifests) {
     for (const cmd of manifest.postInstall || []) {
       console.log(`正在执行: ${cmd}`)
       const parts = cmd.split(' ')
-      await execa(parts[0], parts.slice(1), { stdio: 'inherit' })
+      await run(parts[0], parts.slice(1))
     }
   }
 
   console.log('正在验证...')
-  await execa('npm', ['run', 'type-check'], { stdio: 'inherit' })
-  await execa('npm', ['run', 'lint'], { stdio: 'inherit' })
-  await execa('npm', ['run', 'test'], { stdio: 'inherit' })
-  await execa('npm', ['run', 'build'], { stdio: 'inherit' })
+  await run('npm', ['run', 'type-check'])
+  await run('npm', ['run', 'lint'])
+  await run('npm', ['run', 'test'])
+  await run('npm', ['run', 'build'])
 
   console.log('项目生成完成')
   console.log('启动开发服务器：npm run dev')
