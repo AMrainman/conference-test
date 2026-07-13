@@ -18,6 +18,7 @@ const channelId = computed(() => {
 const {
   localUser,
   remoteUsers,
+  remoteStats,
   localVideoTrack,
   isMuted,
   isVideoOff,
@@ -113,6 +114,7 @@ async function copyStats() {
         :local-user="localUser ?? undefined"
         :local-video-track="localVideoTrack ?? undefined"
         :remote-users="remoteUsers"
+        :remote-stats="remoteStats"
         :is-local-video-off="isVideoOff"
         :is-local-muted="isMuted"
         class="flex-1"
