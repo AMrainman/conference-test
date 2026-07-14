@@ -46,6 +46,12 @@ export default {
           subtle: 'rgb(var(--color-danger-subtle) / <alpha-value>)',
           text: 'rgb(var(--color-danger-text) / <alpha-value>)',
         },
+        info: {
+          DEFAULT: 'rgb(var(--color-info) / <alpha-value>)',
+          hover: 'rgb(var(--color-info-hover) / <alpha-value>)',
+          subtle: 'rgb(var(--color-info-subtle) / <alpha-value>)',
+          text: 'rgb(var(--color-info-text) / <alpha-value>)',
+        },
         overlay: 'rgb(var(--color-overlay) / <alpha-value>)',
         video: {
           background: 'rgb(var(--color-video-background) / <alpha-value>)',

@@ -6,6 +6,7 @@ interface Props {
   videoOn?: boolean
   beautyLevel?: 'off' | 'low' | 'medium' | 'high'
   blurLevel?: 'off' | 'low' | 'medium' | 'high'
+  videoQuality?: 'fluent' | 'sd' | 'hd'
 }
 
 withDefaults(defineProps<Props>(), {
@@ -13,6 +14,7 @@ withDefaults(defineProps<Props>(), {
   videoOn: true,
   beautyLevel: 'off',
   blurLevel: 'off',
+  videoQuality: 'hd',
 })
 
 const emit = defineEmits<{
@@ -22,6 +24,7 @@ const emit = defineEmits<{
   leave: []
   'update:beautyLevel': [level: 'off' | 'low' | 'medium' | 'high']
   'update:blurLevel': [level: 'off' | 'low' | 'medium' | 'high']
+  'update:videoQuality': [level: 'fluent' | 'sd' | 'hd' | 'hdplus']
 }>()
 </script>
 
@@ -31,11 +34,13 @@ const emit = defineEmits<{
     :video-on="videoOn"
     :beauty-level="beautyLevel"
     :blur-level="blurLevel"
+    :video-quality="videoQuality"
     @toggle-mic="emit('toggleMic')"
     @toggle-video="emit('toggleVideo')"
     @toggle-sidebar="emit('toggleSidebar')"
     @leave="emit('leave')"
     @update:beauty-level="emit('update:beautyLevel', $event)"
     @update:blur-level="emit('update:blurLevel', $event)"
+    @update:video-quality="emit('update:videoQuality', $event)"
   />
 </template>

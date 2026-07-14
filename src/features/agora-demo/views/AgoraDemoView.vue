@@ -8,8 +8,11 @@ import VideoGrid from '@/features/meeting-room/components/VideoGrid.vue'
 import { useAgoraChannel } from '../composables/useAgoraChannel'
 import { useAgoraBeautyEffect } from '../composables/useAgoraBeautyEffect'
 import { useAgoraVirtualBackground } from '../composables/useAgoraVirtualBackground'
+import { useAgoraAutoQuality } from '../composables/useAgoraAutoQuality'
 import RemoteVideoStats from '../components/RemoteVideoStats.vue'
 import { formatBitrate } from '../utils/formatBitrate'
+import { VIDEO_QUALITY_PRESETS } from '../config'
+import type { VideoQualityLevel } from '../types'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,12 +32,15 @@ const {
   joined,
   isJoining,
   error,
+  videoQuality,
+  preferredVideoQuality,
   localStats,
   networkQuality,
   join,
   leave,
   toggleMic,
   toggleCamera,
+  setVideoQuality,
 } = useAgoraChannel(channelId)
 
 const {
@@ -53,6 +59,17 @@ const {
   isSupported: isBlurSupported,
   cleanup: cleanupBlurProcessor,
 } = useAgoraVirtualBackground()
+
+const {
+  isAutoDegraded,
+  autoDegradedReason,
+  reset: resetAutoQuality,
+} = useAgoraAutoQuality(networkQuality, videoQuality, preferredVideoQuality, setVideoQuality)
+
+async function handleUpdateVideoQuality(level: VideoQualityLevel) {
+  await setVideoQuality(level)
+  resetAutoQuality()
+}
 
 // pipeline 组装过程中产生的错误；与扩展自身错误分开，避免互相覆盖。
 const pipelineError = ref<string | null>(null)
@@ -247,6 +264,16 @@ async function copyStats() {
       {{ effectError }}
     </div>
 
+    <div
+      v-else-if="isAutoDegraded && autoDegradedReason"
+      class="mx-4 mt-4 rounded-lg bg-info-subtle px-4 py-3 text-sm text-info-text"
+    >
+      {{ autoDegradedReason }}
+      <button type="button" class="ml-2 font-medium underline" @click="handleUpdateVideoQuality(preferredVideoQuality)">
+        恢复 {{ VIDEO_QUALITY_PRESETS[preferredVideoQuality].label }}
+      </button>
+    </div>
+
     <div v-else-if="isJoining && !joined" class="flex flex-1 items-center justify-center text-text-secondary">
       正在加入频道…
     </div>
@@ -269,6 +296,8 @@ async function copyStats() {
         v-if="localStats"
         class="flex items-center justify-center gap-4 bg-surface px-4 py-1 text-xs text-text-secondary"
       >
+        <span>{{ VIDEO_QUALITY_PRESETS[videoQuality].label }}</span>
+        <span class="text-text-muted">|</span>
         <span>上行视频 {{ formatBitrate(localStats.videoSendBitrate) }}</span>
         <span>上行音频 {{ formatBitrate(localStats.audioSendBitrate) }}</span>
         <span v-if="localStats.videoSendFrameRate">{{ localStats.videoSendFrameRate }}fps</span>
@@ -285,11 +314,13 @@ async function copyStats() {
         :video-on="!isVideoOff"
         :beauty-level="beautyLevel"
         :blur-level="blurLevel"
+        :video-quality="videoQuality"
         @toggle-mic="toggleMic"
         @toggle-video="toggleCamera"
         @leave="handleLeave"
         @update:beauty-level="setBeautyLevel"
         @update:blur-level="setBlurLevel"
+        @update:video-quality="handleUpdateVideoQuality"
       />
     </main>
   </div>

@@ -8,6 +8,7 @@ import {
   EllipsisVerticalIcon,
   SparklesIcon,
   SwatchIcon,
+  SignalIcon,
 } from '@heroicons/vue/24/outline'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import IconButton from './IconButton.vue'
@@ -18,6 +19,7 @@ interface Props {
   videoOn?: boolean
   beautyLevel?: 'off' | 'low' | 'medium' | 'high'
   blurLevel?: 'off' | 'low' | 'medium' | 'high'
+  videoQuality?: 'fluent' | 'sd' | 'hd' | 'hdplus'
 }
 
 withDefaults(defineProps<Props>(), {
@@ -25,6 +27,7 @@ withDefaults(defineProps<Props>(), {
   videoOn: true,
   beautyLevel: 'off',
   blurLevel: 'off',
+  videoQuality: 'hd',
 })
 
 const emit = defineEmits<{
@@ -34,6 +37,7 @@ const emit = defineEmits<{
   leave: []
   'update:beautyLevel': [level: 'off' | 'low' | 'medium' | 'high']
   'update:blurLevel': [level: 'off' | 'low' | 'medium' | 'high']
+  'update:videoQuality': [level: 'fluent' | 'sd' | 'hd' | 'hdplus']
 }>()
 
 const BEAUTY_OPTIONS: { value: 'off' | 'low' | 'medium' | 'high'; label: string }[] = [
@@ -48,6 +52,13 @@ const BLUR_OPTIONS: { value: 'off' | 'low' | 'medium' | 'high'; label: string }[
   { value: 'low', label: '模糊：低' },
   { value: 'medium', label: '模糊：中' },
   { value: 'high', label: '模糊：高' },
+]
+
+const QUALITY_OPTIONS: { value: 'fluent' | 'sd' | 'hd' | 'hdplus'; label: string }[] = [
+  { value: 'fluent', label: '流畅' },
+  { value: 'sd', label: '标清' },
+  { value: 'hd', label: '高清' },
+  { value: 'hdplus', label: '超清' },
 ]
 
 // 容器宽度小于 @md 时隐藏按钮文字；小于 @sm 时将“参会者”收进“更多”菜单。
@@ -126,6 +137,33 @@ const labelClass = ['hidden', '@md:inline']
       </MenuItems>
     </Menu>
 
+    <!-- 清晰度下拉 -->
+    <Menu as="div" class="relative hidden @sm:block">
+      <MenuButton as="template">
+        <IconButton
+          :label="`清晰度：${QUALITY_OPTIONS.find(i => i.value === videoQuality)?.label}`"
+          :label-class="labelClass"
+        >
+          <SignalIcon class="h-5 w-5" />
+        </IconButton>
+      </MenuButton>
+
+      <MenuItems
+        class="absolute bottom-full right-0 mb-2 w-32 rounded-lg bg-surface p-1 shadow-lg ring-1 ring-overlay/5"
+      >
+        <MenuItem v-for="item in QUALITY_OPTIONS" :key="item.value" v-slot="{ active }">
+          <button
+            type="button"
+            class="flex w-full items-center gap-2 rounded px-3 py-2 text-sm text-text-secondary"
+            :class="[active && 'bg-surface-secondary', videoQuality === item.value && 'font-medium text-text']"
+            @click="emit('update:videoQuality', item.value)"
+          >
+            {{ item.label }}
+          </button>
+        </MenuItem>
+      </MenuItems>
+    </Menu>
+
     <IconButton label="参会者" :label-class="labelClass" class="hidden @sm:flex" @click="emit('toggleSidebar')">
       <UsersIcon class="h-5 w-5" />
     </IconButton>
@@ -140,6 +178,18 @@ const labelClass = ['hidden', '@md:inline']
       <MenuItems
         class="absolute bottom-full right-0 mb-2 w-40 rounded-lg bg-surface p-1 shadow-lg ring-1 ring-overlay/5"
       >
+        <MenuItem v-for="item in QUALITY_OPTIONS" :key="`mobile-quality-${item.value}`" v-slot="{ active }">
+          <button
+            type="button"
+            class="flex w-full items-center gap-2 rounded px-3 py-2 text-sm text-text-secondary"
+            :class="[active && 'bg-surface-secondary', videoQuality === item.value && 'font-medium text-text']"
+            @click="emit('update:videoQuality', item.value)"
+          >
+            <SignalIcon class="h-4 w-4" />
+            清晰度：{{ item.label }}
+          </button>
+        </MenuItem>
+
         <MenuItem v-for="item in BEAUTY_OPTIONS" :key="`mobile-beauty-${item.value}`" v-slot="{ active }">
           <button
             type="button"

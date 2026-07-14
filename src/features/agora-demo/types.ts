@@ -1,4 +1,11 @@
-import type { IRemoteVideoTrack, IRemoteAudioTrack, UID } from 'agora-rtc-sdk-ng'
+import type { IRemoteVideoTrack, IRemoteAudioTrack, UID, VideoEncoderConfigurationPreset } from 'agora-rtc-sdk-ng'
+
+export type VideoQualityLevel = 'fluent' | 'sd' | 'hd' | 'hdplus'
+
+export interface VideoQualityPreset {
+  label: string
+  encoderConfig: VideoEncoderConfigurationPreset
+}
 
 export interface AgoraLocalUser {
   uid: UID

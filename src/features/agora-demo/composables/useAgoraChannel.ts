@@ -7,8 +7,15 @@ import AgoraRTC, {
   type IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng'
 
-import { AGORA_APP_ID, AGORA_TOKEN } from '../config'
-import type { AgoraLocalUser, AgoraRemoteUser, LocalStats, NetworkQualitySnapshot, RemoteStats } from '../types'
+import { AGORA_APP_ID, AGORA_TOKEN, VIDEO_QUALITY_PRESETS } from '../config'
+import type {
+  AgoraLocalUser,
+  AgoraRemoteUser,
+  LocalStats,
+  NetworkQualitySnapshot,
+  RemoteStats,
+  VideoQualityLevel,
+} from '../types'
 
 const STATS_INTERVAL = 2000
 
@@ -113,6 +120,8 @@ export function useAgoraChannel(channelId: Ref<string>) {
   const error = ref<string | null>(null)
   const isJoining = ref(false)
   const disposed = ref(false)
+  const videoQuality = ref<VideoQualityLevel>('hd')
+  const preferredVideoQuality = ref<VideoQualityLevel>('hd')
 
   const { localStats, remoteStats, networkQuality, start: startStats, stop: stopStats } = useStats(client)
 
@@ -145,7 +154,10 @@ export function useAgoraChannel(channelId: Ref<string>) {
       }
       localUser.value = { uid, displayName: generateDisplayName() }
 
-      const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks()
+      const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(
+        {},
+        { encoderConfig: VIDEO_QUALITY_PRESETS[videoQuality.value].encoderConfig }
+      )
       if (disposed.value) {
         audioTrack.close()
         videoTrack.close()
@@ -210,6 +222,22 @@ export function useAgoraChannel(channelId: Ref<string>) {
 
   function handleUserLeft(user: IAgoraRTCRemoteUser) {
     remoteUsers.value = remoteUsers.value.filter(u => u.uid !== user.uid)
+  }
+
+  async function setVideoQuality(level: VideoQualityLevel, options: { updatePreferred?: boolean } = {}) {
+    if (!VIDEO_QUALITY_PRESETS[level] || videoQuality.value === level) return
+
+    try {
+      if (localVideoTrack.value) {
+        await localVideoTrack.value.setEncoderConfiguration(VIDEO_QUALITY_PRESETS[level].encoderConfig)
+      }
+      videoQuality.value = level
+      if (options.updatePreferred !== false) {
+        preferredVideoQuality.value = level
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '切换清晰度失败'
+    }
   }
 
   async function toggleMic() {
@@ -298,6 +326,8 @@ export function useAgoraChannel(channelId: Ref<string>) {
     joined,
     isJoining,
     error,
+    videoQuality,
+    preferredVideoQuality,
     localStats,
     remoteStats,
     networkQuality,
@@ -305,5 +335,6 @@ export function useAgoraChannel(channelId: Ref<string>) {
     leave,
     toggleMic,
     toggleCamera,
+    setVideoQuality,
   }
 }
