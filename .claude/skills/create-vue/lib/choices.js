@@ -1,5 +1,4 @@
 export const BASE_PLUGINS = [
-  { name: 'Pinia', value: 'pinia' },
   { name: 'Vue Router', value: 'vue-router' },
   { name: 'Storybook', value: 'storybook' },
   { name: 'MSW', value: 'msw' },

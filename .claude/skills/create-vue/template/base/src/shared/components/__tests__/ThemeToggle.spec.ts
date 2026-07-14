@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import ThemeToggle from '../ThemeToggle.vue'
-import { initTheme, theme, setTheme } from '@/shared/stores/themeStore'
+import { useThemeStore } from '@/shared/stores/themeStore'
 
 function createMatchMediaMock(initialDark = false) {
   let isDark = initialDark
@@ -35,7 +36,8 @@ describe('ThemeToggle', () => {
 
     localStorage.clear()
     document.documentElement.classList.remove('dark')
-    initTheme()
+    setActivePinia(createPinia())
+    useThemeStore().initTheme()
   })
 
   afterEach(() => {
@@ -57,21 +59,23 @@ describe('ThemeToggle', () => {
     await wrapper.find('button').trigger('click')
     await nextTick()
 
-    expect(theme.value).toBe('dark')
+    const store = useThemeStore()
+    expect(store.theme).toBe('dark')
     expect(document.documentElement.classList.contains('dark')).toBe(true)
     expect(localStorage.getItem('app-theme')).toBe('dark')
     expect(wrapper.find('button').attributes('aria-pressed')).toBe('true')
   })
 
   it('再次点击按钮切换回浅色模式并缓存', async () => {
-    setTheme('dark')
+    const store = useThemeStore()
+    store.setTheme('dark')
     await nextTick()
 
     const wrapper = mount(ThemeToggle)
     await wrapper.find('button').trigger('click')
     await nextTick()
 
-    expect(theme.value).toBe('light')
+    expect(store.theme).toBe('light')
     expect(document.documentElement.classList.contains('dark')).toBe(false)
     expect(localStorage.getItem('app-theme')).toBe('light')
     expect(wrapper.find('button').attributes('aria-pressed')).toBe('false')

@@ -105,16 +105,15 @@ function applyOverride(manifest, overridePath, targetDir) {
 }
 
 function generateMainEntry(targetDir, options) {
-  const hasPinia = options.basePlugins.includes('pinia')
   const hasRouter = options.basePlugins.includes('vue-router')
   const hasMsw = options.basePlugins.includes('msw')
 
   const imports = [
     "import { createApp } from 'vue'",
+    "import { createPinia } from 'pinia'",
     "import App from './App.vue'",
     "import { useThemeStore } from '@/shared/stores/themeStore'",
   ]
-  if (hasPinia) imports.push("import { createPinia } from 'pinia'")
   if (hasRouter) imports.push("import { router } from './router'")
   imports.push("import '@/shared/styles/tailwind.css'")
 
@@ -133,7 +132,9 @@ async function enableMocking() {
   body += `
 async function bootstrap() {
 ${hasMsw ? '  await enableMocking()\n' : ''}  const app = createApp(App)
-${hasPinia ? '  const pinia = createPinia()\n  app.use(pinia)\n' : ''}${hasRouter ? '  app.use(router)\n' : ''}  const themeStore = useThemeStore()
+  const pinia = createPinia()
+  app.use(pinia)
+${hasRouter ? '  app.use(router)\n' : ''}  const themeStore = useThemeStore()
   themeStore.initTheme()
   app.mount('#app')
 }

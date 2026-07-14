@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Theme } from '@/shared/types'
 
@@ -34,53 +35,64 @@ function safeSetItem(key: string, value: string) {
   }
 }
 
-const theme = ref<Theme>('system')
-const systemTheme = ref<'light' | 'dark'>(getSystemTheme())
+export const useThemeStore = defineStore('theme', () => {
+  const theme = ref<Theme>('system')
 
-let mediaQueryList: MediaQueryList | undefined
-let mediaQueryListener: ((event: MediaQueryListEvent) => void) | undefined
+  // 监听系统主题变化时同步更新该 ref，使 resolvedTheme 具备响应性
+  const systemTheme = ref<'light' | 'dark'>(getSystemTheme())
 
-export const resolvedTheme = computed(() => {
-  return theme.value === 'system' ? systemTheme.value : theme.value
-})
+  // 用于清理上一次的系统主题监听器，避免重复注册导致泄漏
+  let mediaQueryList: MediaQueryList | undefined
+  let mediaQueryListener: ((event: MediaQueryListEvent) => void) | undefined
 
-export function cleanupTheme() {
-  if (mediaQueryList && mediaQueryListener) {
-    mediaQueryList.removeEventListener('change', mediaQueryListener)
-  }
-  mediaQueryList = undefined
-  mediaQueryListener = undefined
-}
+  const resolvedTheme = computed(() => {
+    return theme.value === 'system' ? systemTheme.value : theme.value
+  })
 
-export function setTheme(value: Theme) {
-  theme.value = value
-  if (value === 'system') {
-    systemTheme.value = getSystemTheme()
-  }
-  safeSetItem(STORAGE_KEY, value)
-  applyTheme(resolvedTheme.value)
-}
-
-export function toggleTheme() {
-  const next = resolvedTheme.value === 'dark' ? 'light' : 'dark'
-  setTheme(next)
-}
-
-export function initTheme() {
-  const saved = safeGetItem(STORAGE_KEY)
-  theme.value = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system'
-  systemTheme.value = getSystemTheme()
-  applyTheme(resolvedTheme.value)
-
-  cleanupTheme()
-  mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
-  mediaQueryListener = e => {
-    systemTheme.value = e.matches ? 'dark' : 'light'
-    if (theme.value === 'system') {
-      applyTheme(resolvedTheme.value)
+  function cleanup() {
+    if (mediaQueryList && mediaQueryListener) {
+      mediaQueryList.removeEventListener('change', mediaQueryListener)
     }
+    mediaQueryList = undefined
+    mediaQueryListener = undefined
   }
-  mediaQueryList.addEventListener('change', mediaQueryListener)
-}
 
-export { theme }
+  function setTheme(value: Theme) {
+    theme.value = value
+    if (value === 'system') {
+      // 切回 system 时刷新系统主题缓存，避免使用旧值
+      systemTheme.value = getSystemTheme()
+    }
+    safeSetItem(STORAGE_KEY, value)
+    applyTheme(resolvedTheme.value)
+  }
+
+  function toggleTheme() {
+    const next = resolvedTheme.value === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+  }
+
+  function initTheme() {
+    const saved = safeGetItem(STORAGE_KEY)
+    theme.value = saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system'
+
+    // 初始化时同步一次系统主题，确保 resolvedTheme 与 DOM 一致
+    systemTheme.value = getSystemTheme()
+    applyTheme(resolvedTheme.value)
+
+    // 重新初始化前先移除旧的监听器
+    cleanup()
+
+    mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQueryListener = e => {
+      // 系统主题变化时同步刷新 systemTheme，让 resolvedTheme 自动重新计算
+      systemTheme.value = e.matches ? 'dark' : 'light'
+      if (theme.value === 'system') {
+        applyTheme(resolvedTheme.value)
+      }
+    }
+    mediaQueryList.addEventListener('change', mediaQueryListener)
+  }
+
+  return { theme, resolvedTheme, setTheme, toggleTheme, initTheme, cleanup }
+})

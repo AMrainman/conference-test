@@ -17,15 +17,39 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 ## 执行步骤
 
 1. **检查目录状态**：用 Bash 执行 `ls -la` 查看当前目录。若目录非空（除 `README.md` 外），向用户说明情况并等待用户决定是否继续。
-2. **收集插件组合**：由于 `AskUserQuestion` 每个问题最多 4 个选项，将插件分组询问。每组都是多选（`multiSelect: true`），不选表示不安装该组任何插件。
+2. **收集插件组合**：使用 `AskUserQuestion` 工具分组合收集用户选择。
 
-   **第一轮 AskUserQuestion**（4 个问题）：
-   - 基础插件（1/2）：Pinia、Vue Router、Storybook、MSW
+   **调用格式要求**：
+   - 每次只能调用 `AskUserQuestion` 一次；若问题多可拆成多次调用。
+   - 顶层参数只能是 `questions` 数组，**不能**传顶层 `question`。
+   - 数组内每个对象必须包含四个字段：`question`（问题文本）、`header`（短标签）、`multiSelect`（是否多选）、`options`（选项数组）。
+   - 每个 `options` 元素为 `{ label: '显示名称', description: '简短说明' }`。
+
+   **示例（基础插件 1/2）**：
+
+   ```json
+   {
+     "questions": [
+       {
+         "question": "请选择要安装的基础插件（1/2）",
+         "header": "基础插件",
+         "multiSelect": true,
+         "options": [
+           { "label": "Vue Router", "description": "vue-router" },
+           { "label": "Storybook", "description": "storybook" },
+           { "label": "MSW", "description": "msw" }
+         ]
+       }
+     ]
+   }
+   ```
+
+   **需要询问的分组**（每组一个问题，可多选，不选表示该组不安装任何插件）：
+
+   - 基础插件（1/2）：Vue Router、Storybook、MSW
    - 基础插件（2/2）：ESLint、Prettier、Vitest
    - UI 库（1/2）：Ant Design Vue、Element Plus、Vant、Headless UI
    - UI 库（2/2）：Quasar、Vuetify、PrimeVue、Naive UI
-
-   **第二轮 AskUserQuestion**（2 个问题）：
    - 图标库：FontAwesome、Heroicons、Lucide
    - 开发体验插件：unplugin-auto-import、unplugin-vue-components
 
@@ -35,19 +59,19 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
    - `iconLibraries`: 字符串数组
    - `dxPlugins`: 字符串数组
 4. **向用户确认**：以文本形式列出解析后的配置，例如：
-   "将生成以下配置：基础插件 [Pinia, Vue Router, ESLint, Prettier, Vitest]，UI 库 [Element Plus]，图标库 [Heroicons]，开发体验插件 [unplugin-auto-import]。确认请回复 y，修改请直接说明。"
+   "将生成以下配置：基础插件 [Vue Router, ESLint, Prettier, Vitest]，UI 库 [Element Plus]，图标库 [Heroicons]，开发体验插件 [unplugin-auto-import]。确认请回复 y，修改请直接说明。"
 5. **生成项目**：用户确认后，调用 Bash：
    ```bash
    node .claude/skills/create-vue/index.js --options '<json>'
    ```
    其中 `<json>` 是步骤 3 构造的 JSON 字符串。
-6. **报告结果**：脚本会自动安装依赖、初始化 MSW（如选中）、运行验证。生成完成后告知用户结果。
+6. **报告结果**：生成完成后告知用户项目骨架已生成，并提示手动执行 `npm install` 与 `npm run dev`。
 
 ## 选项 JSON 示例
 
 ```json
 {
-  "basePlugins": ["pinia", "vue-router", "eslint", "prettier", "vitest"],
+  "basePlugins": ["vue-router", "eslint", "prettier", "vitest"],
   "uiLibraries": ["element-plus"],
   "iconLibraries": ["heroicons"],
   "dxPlugins": ["auto-import", "components-auto"]
@@ -58,7 +82,6 @@ allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
 
 | 显示名称 | value |
 |---|---|
-| Pinia | `pinia` |
 | Vue Router | `vue-router` |
 | Storybook | `storybook` |
 | MSW | `msw` |
