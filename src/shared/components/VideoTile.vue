@@ -79,7 +79,7 @@ watch(
 
 <template>
   <div
-    class="@container relative flex aspect-video items-center justify-center overflow-hidden rounded-xl bg-video-background"
+    class="@container relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl bg-video-background"
     :class="isSpeaking && 'ring-2 ring-primary'"
   >
     <video v-show="!showAvatar" ref="videoRef" class="h-full w-full object-cover" autoplay muted playsinline />

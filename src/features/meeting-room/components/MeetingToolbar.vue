@@ -6,7 +6,7 @@ interface Props {
   videoOn?: boolean
   beautyLevel?: 'off' | 'low' | 'medium' | 'high'
   blurLevel?: 'off' | 'low' | 'medium' | 'high'
-  videoQuality?: 'fluent' | 'sd' | 'hd'
+  videoQuality?: 'fluent' | 'sd' | 'hd' | 'hdplus'
 }
 
 withDefaults(defineProps<Props>(), {

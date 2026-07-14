@@ -10,26 +10,54 @@ const meta: Meta<typeof VideoGrid> = {
 export default meta
 type Story = StoryObj<typeof VideoGrid>
 
-const twoParticipants: Participant[] = [
-  { id: 'u1', displayName: '张三', isHost: true, isMuted: false, isVideoOff: false },
-  { id: 'u2', displayName: '李四', isHost: false, isMuted: true, isVideoOff: true },
-]
+function createParticipants(count: number): Participant[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `u${i + 1}`,
+    displayName: `用户 ${i + 1}`,
+    isHost: i === 0,
+    isMuted: i % 2 === 1,
+    isVideoOff: i % 3 === 2,
+  }))
+}
 
-const fourParticipants: Participant[] = [
-  { id: 'u1', displayName: '张三', isHost: true, isMuted: false, isVideoOff: false },
-  { id: 'u2', displayName: '李四', isHost: false, isMuted: true, isVideoOff: true },
-  { id: 'u3', displayName: '王五', isHost: false, isMuted: false, isVideoOff: false },
-  { id: 'u4', displayName: '赵六', isHost: false, isMuted: false, isVideoOff: true },
-]
+export const OneParticipant: Story = {
+  args: {
+    participants: createParticipants(1),
+  },
+}
 
 export const TwoParticipants: Story = {
   args: {
-    participants: twoParticipants,
+    participants: createParticipants(2),
   },
 }
 
 export const FourParticipants: Story = {
   args: {
-    participants: fourParticipants,
+    participants: createParticipants(4),
+  },
+}
+
+export const FiveParticipants: Story = {
+  args: {
+    participants: createParticipants(5),
+  },
+}
+
+export const SevenParticipants: Story = {
+  args: {
+    participants: createParticipants(7),
+  },
+}
+
+export const NineParticipants: Story = {
+  args: {
+    participants: createParticipants(9),
+  },
+}
+
+export const TenParticipants: Story = {
+  args: {
+    participants: createParticipants(10),
   },
 }
